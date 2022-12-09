@@ -18,6 +18,6 @@ CSCORE <- function(object, genes){
     seq_depth <- object$nCount_RNA
   }
   # Run CS-CORE
-  cscore_network <- CSCORE_IRLS(count_matrix, seq_depth)
+  cscore_network <- CSCORE_IRLS(count_matrix[,genes], seq_depth)
   return(cscore_network)
 }
