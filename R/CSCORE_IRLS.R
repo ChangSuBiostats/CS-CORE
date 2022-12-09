@@ -1,4 +1,15 @@
-CSCORE_IRLS <- function(X, seq_depth = NULL,  probs = 0.5, covar_weight = "regularized"){
+#' Iteratively reweighted least squares procedure from CS-CORE for estimating and testing cell-type-specific co-expressions using single cell RNA sequencing data
+#'
+#' @param X A n by p matrix of UMI counts, where n denotes the number of cells and p denotes the number of genes
+#' @param seq_depth A length n vector of sequencing depths
+#' @param covar_weight A character string. If specified to be "regularized", the weight estimates will be regularized across genes
+#'
+#' @return A list of three p by p matrices: co-expression estimates, p values and test statistics
+#' @export
+#'
+#' @examples
+#' # to be added
+CSCORE_IRLS <- function(X, seq_depth, covar_weight = "regularized"){
   if (is.null(seq_depth)) {
     seq_depth = apply(X, 1, sum, na.rm = T)
   }
@@ -17,7 +28,7 @@ CSCORE_IRLS <- function(X, seq_depth = NULL,  probs = 0.5, covar_weight = "regul
 
   while( error > 0.05 & j <= 10 ){
     theta_previous = theta
-    theta_median = quantile(theta[theta > 0], na.rm = T, probs = probs)
+    theta_median = stats::quantile(theta[theta > 0], na.rm = T, probs = 0.5)
     theta[theta < 0] = Inf
     w1 = M + outer(seq_depth_sq, mu^2/theta_median)
     w1[is.na(w1)|w1 <= 0] = 1
@@ -34,7 +45,7 @@ CSCORE_IRLS <- function(X, seq_depth = NULL,  probs = 0.5, covar_weight = "regul
     print(error)
   }
 
-  theta_median = quantile(theta[theta > 0], na.rm = T, probs = probs)
+  theta_median = stats::quantile(theta[theta > 0], na.rm = T, probs = 0.5)
   theta[theta < 0] = Inf
   if( covar_weight == "regularized" ){
     w1 = M + outer(seq_depth_sq, mu^2/theta_median)
@@ -55,6 +66,6 @@ CSCORE_IRLS <- function(X, seq_depth = NULL,  probs = 0.5, covar_weight = "regul
   num <- t(seq_depth_sq * X_centered_scaled) %*% X_centered_scaled
   deno <- sqrt(t(seq_depth^4 * ele_inv_Sigma) %*% ele_inv_Sigma)
   test_stat <- num/deno
-  p_value <- 2 * pnorm(abs(test_stat), lower.tail = F)
+  p_value <- 2 * stats::pnorm(abs(test_stat), lower.tail = F)
   return(list(est = est, p_value = p_value, test_stat = test_stat))
 }
