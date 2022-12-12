@@ -14,3 +14,5 @@ RoxygenNote: 7.2.2
 Imports: 
     stats,
     Seurat
+Suggests: 
+    testthat
