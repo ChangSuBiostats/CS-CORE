@@ -13,7 +13,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.2
 Imports: 
     stats,
-    Seurat,
-    dplyr
+    Seurat
 Suggests: 
     testthat
