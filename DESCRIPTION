@@ -17,3 +17,5 @@ Imports:
 Depends: 
     R (>= 2.10)
 LazyData: true
+Suggests: 
+    testthat

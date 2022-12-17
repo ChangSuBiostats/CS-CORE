@@ -4,12 +4,14 @@
 \alias{CSCORE}
 \title{Run CS-CORE on a Seurat object}
 \usage{
-CSCORE(object, genes)
+CSCORE(object, genes, seq_depth = NULL)
 }
 \arguments{
 \item{object}{A Seurat single cell object}
 
 \item{genes}{A vector of gene names, for which the co-expression network will be estimated}
+
+\item{seq_depth}{A length n vector of sequencing depths. If "NULL", then it will be calculated as the total number of UMI counts in each cell}
 }
 \value{
 A list of three p by p matrices: co-expression estimates, p values and test statistics
