@@ -2,23 +2,43 @@
 % Please edit documentation in R/CSCORE_IRLS.R
 \name{CSCORE_IRLS}
 \alias{CSCORE_IRLS}
-\title{Iteratively reweighted least squares procedure from CS-CORE for estimating and testing cell-type-specific co-expressions using single cell RNA sequencing data}
+\title{Iteratively reweighted least squares (IRLS) procedure in CS-CORE}
+\source{
+Cell-type-specific co-expression inference from single cell RNA-sequencing data
+Chang Su, Zichun Xu, Xinning Shan, Biao Cai, Hongyu Zhao, Jingfei Zhang;
+bioRxiv 2022.12.13.520181; doi: \url{https://doi.org/10.1101/2022.12.13.520181}
+}
 \usage{
-CSCORE_IRLS(X, seq_depth, covar_weight = "regularized")
+CSCORE_IRLS(X, seq_depth)
 }
 \arguments{
 \item{X}{A n by p matrix of UMI counts, where n denotes the number of cells and p denotes the number of genes}
 
 \item{seq_depth}{A length n vector of sequencing depths}
-
-\item{covar_weight}{A character string. If specified to be "regularized", the weight estimates will be regularized across genes}
 }
 \value{
-A list of three p by p matrices: co-expression estimates, p values and test statistics
+A list of three p by p matrices:
+\describe{
+\item{est}{co-expression estimates}
+\item{p_value}{p values}
+\item{test_stat}{test statistics}
+}
 }
 \description{
-Iteratively reweighted least squares procedure from CS-CORE for estimating and testing cell-type-specific co-expressions using single cell RNA sequencing data
+The iteratively reweighted least squares procedure in CS-CORE for estimating and testing cell-type-specific co-expressions using single cell RNA sequencing data.
+More details on this procedure can be found in the CS-CORE paper: \url{https://doi.org/10.1101/2022.12.13.520181}.
 }
 \examples{
-# to be added
+## Toy example:
+## run CSCORE on a simulated independent gene pair
+cscore_example <- CSCORE_IRLS(ind_gene_pair$counts, ind_gene_pair$seq_depths)
+
+## Estimated co-expression between two genes
+cscore_example$est[1,2]
+# close to 0: 0.007820124
+
+## p-values
+cscore_example$p_value[1,2]
+# not significant: 0.961981
+
 }
