@@ -28,3 +28,9 @@ test_that("sequencing depth must be equal to the number of cells", {
   seq_depth = c(test_dat[[2]], 0)
   expect_error(CSCORE_result = CSCORE_IRLS(X = count, seq_depth = seq_depth))
 })
+
+test_that("The values estimates and p values are computed correctly", {
+  cscore_example <- CSCORE_IRLS(ind_gene_pair$counts, ind_gene_pair$seq_depths)
+  expect_equal(cscore_example$est[1,2], 0.0078201236)
+  expect_equal(cscore_example$p_value[1,2], 0.96198097)
+})
