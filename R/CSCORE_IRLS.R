@@ -5,6 +5,7 @@
 #'
 #' @param X A n by p matrix of UMI counts, where n denotes the number of cells and p denotes the number of genes
 #' @param seq_depth A length n vector of sequencing depths
+#' @param post_process Whether to process the estimated co-expressions such that the estimates are between -1 and 1. Default to TRUE.
 #'
 #' @return A list of three p by p matrices:
 #' \describe{
@@ -31,7 +32,7 @@
 #' Cell-type-specific co-expression inference from single cell RNA-sequencing data
 #' Chang Su, Zichun Xu, Xinning Shan, Biao Cai, Hongyu Zhao, Jingfei Zhang;
 #' bioRxiv 2022.12.13.520181; doi: <https://doi.org/10.1101/2022.12.13.520181>
-CSCORE_IRLS <- function(X, seq_depth){
+CSCORE_IRLS <- function(X, seq_depth, post_process = TRUE){
   if (is.null(seq_depth)) {
     seq_depth = apply(X, 1, sum, na.rm = T)
   }
@@ -69,7 +70,7 @@ CSCORE_IRLS <- function(X, seq_depth){
   if(j == 10 & delta > 0.05){
     print('IRLS failed to converge after 10 iterations. Please check your data.')
   }else{
-    print(sprintf('IRLS converged after %i iterations', j))
+    print(sprintf('IRLS converged after %i iterations.', j))
   }
 
   theta_median = stats::quantile(theta[theta > 0], na.rm = T, probs = 0.5)
@@ -80,11 +81,7 @@ CSCORE_IRLS <- function(X, seq_depth){
   covar = matrix(NA, nrow = n_gene, ncol = n_gene)
   covar <- (t(seq_depth_sq * X_centered/w) %*% (X_centered/w))/(t(seq_depth_sq/w) %*% (seq_depth_sq/w))
 
-  # This step might generate NA, as sigma2 estimate from least squares can be negative.
-  # We will implement post-processing in CSCORE.R to address this.
-  sigma <- sqrt(sigma2)
-  est <- covar/outer(sigma, sigma)
-  diag(est)[!is.na(diag(est))] <- 1
+  # Evaluate test statistics and p values
   Sigma <- M + outer(seq_depth_sq, sigma2)
   ele_inv_Sigma <- 1/Sigma
   X_centered_scaled <- X_centered * ele_inv_Sigma
@@ -92,5 +89,53 @@ CSCORE_IRLS <- function(X, seq_depth){
   deno <- sqrt(t(seq_depth^4 * ele_inv_Sigma) %*% ele_inv_Sigma)
   test_stat <- num/deno
   p_value <- 2 * stats::pnorm(abs(test_stat), lower.tail = F)
+
+  # Evaluate co-expression estimates
+  neg_gene_inds <- which(sigma2 < 0)
+  sigma2[neg_gene_inds] <- 0
+  sigma <- sqrt(sigma2)
+  est <- covar/outer(sigma, sigma)
+  # diag(est)[!is.na(diag(est))] <- 1
+
+  # Post-process the co-expression estimates
+  if(post_process) est <- post_process_est(est)
   return(list(est = est, p_value = p_value, test_stat = test_stat))
+}
+
+
+#' Post-process IRLS estimates
+#'
+#' The IRLS procedure does not guarantee the variance estimates to be postive nor the co-expression parameters to be bounded.
+#' To address this, this function evaluates the percentage of genes with negative variance estimates;
+#' sets the their co-expressions to 0 as these genes do not have sufficient biological variations.
+#' This function also evaluates the percentage of gene pairs with out-of-bound co-expression estimates;
+#' sets the co-expressions greater than 1 to 1; set the co-expressions smaller than -1 to -1.
+#'
+#' @param est Estimated co-expression matrix from IRLS
+#'
+#' @return Post-processed correlation matrix
+#'
+#' @export
+#'
+post_process_est <- function(est){
+  p <- nrow(est)
+  # Post-process CS-CORE estimates
+  neg_gene_inds <- which(is.infinite(diag(est)))
+  if(length(neg_gene_inds) > 0){
+    print(sprintf('%i among %i genes have negative variance estimates. Their co-expressions with other genes were set to 0.',
+                  length(neg_gene_inds), p))
+  }
+  # Negative variances suggest insufficient biological variation,
+  # and also lack of correlation
+  est[neg_gene_inds, ] <- 0
+  est[, neg_gene_inds] <- 0
+  diag(est)[neg_gene_inds] <- 1
+  # Gene pairs with out-of-bound estimates
+  print(sprintf('%.4f%% co-expression estimates were greater than 1 and were set to 1.',
+                mean(est[upper.tri(est)] > 1, na.rm = T) * 100))
+  print(sprintf('%.4f%% co-expression estimates were smaller than -1 and were set to -1.',
+                mean(est[upper.tri(est)] < -1, na.rm = T) * 100))
+  est[est > 1] <- 1
+  est[est < -1] <- -1
+  return(est)
 }

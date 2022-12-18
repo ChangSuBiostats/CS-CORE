@@ -9,12 +9,14 @@ Chang Su, Zichun Xu, Xinning Shan, Biao Cai, Hongyu Zhao, Jingfei Zhang;
 bioRxiv 2022.12.13.520181; doi: \url{https://doi.org/10.1101/2022.12.13.520181}
 }
 \usage{
-CSCORE_IRLS(X, seq_depth)
+CSCORE_IRLS(X, seq_depth, post_process = TRUE)
 }
 \arguments{
 \item{X}{A n by p matrix of UMI counts, where n denotes the number of cells and p denotes the number of genes}
 
 \item{seq_depth}{A length n vector of sequencing depths}
+
+\item{post_process}{Whether to process the estimated co-expressions such that the estimates are between -1 and 1. Default to TRUE.}
 }
 \value{
 A list of three p by p matrices:
