@@ -2,7 +2,7 @@
 % Please edit documentation in R/CSCORE.R
 \name{CSCORE}
 \alias{CSCORE}
-\title{Run CS-CORE on a Seurat object}
+\title{Run CS-CORE to infer the cell-type-specific co-expression network}
 \usage{
 CSCORE(object, genes, seq_depth = NULL)
 }
@@ -14,10 +14,17 @@ CSCORE(object, genes, seq_depth = NULL)
 \item{seq_depth}{A length n vector of sequencing depths. If "NULL", then it will be calculated as the total number of UMI counts in each cell}
 }
 \value{
-A list of three p by p matrices: co-expression estimates, p values and test statistics
+A list of three p by p matrices:
+\describe{
+\item{est}{co-expression estimates}
+\item{p_value}{p values}
+\item{test_stat}{test statistics}
+}
 }
 \description{
-Run CS-CORE on a Seurat object
+Run CS-CORE on a Seurat object to infer the cell-type-specific co-expression network for a specified set of genes.
+Note that the Seurat object should have already been subsetted to cells from the same cell type,
+in order to infer cell-type-specific co-expressions.
 }
 \examples{
 # to be added

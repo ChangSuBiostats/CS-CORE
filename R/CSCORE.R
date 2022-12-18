@@ -1,10 +1,19 @@
-#' Run CS-CORE on a Seurat object
+#' Run CS-CORE to infer the cell-type-specific co-expression network
+#'
+#' Run CS-CORE on a Seurat object to infer the cell-type-specific co-expression network for a specified set of genes.
+#' Note that the Seurat object should have already been subsetted to cells from the same cell type,
+#' in order to infer cell-type-specific co-expressions.
 #'
 #' @param object A Seurat single cell object
 #' @param genes A vector of gene names, for which the co-expression network will be estimated
 #' @param seq_depth A length n vector of sequencing depths. If "NULL", then it will be calculated as the total number of UMI counts in each cell
 #'
-#' @return A list of three p by p matrices: co-expression estimates, p values and test statistics
+#' @return A list of three p by p matrices:
+#' \describe{
+#'   \item{est}{co-expression estimates}
+#'   \item{p_value}{p values}
+#'   \item{test_stat}{test statistics}
+#' }
 #' @export
 #'
 #' @examples
@@ -14,9 +23,15 @@ CSCORE <- function(object, genes, seq_depth = NULL){
   count_matrix <- t(as.matrix(Seurat::GetAssayData(object, slot = 'counts')))
   # Extract / calculate the sequencing depths
   if(is.null(seq_depth)){
-    seq_depth <- object$nCount_RNA
+    if(!is.null(object$nCount_RNA)){
+      seq_depth <- object$nCount_RNA
+    }else{
+      seq_depth <- rowSums(count_matrix)
+    }
+  }else{
+    if(length(seq_depth) != nrow(count_matrix)) stop("The length of the sequencing depth must match the number of cells.")
   }
   # Run CS-CORE
-  cscore_network <- CSCORE_IRLS(count_matrix[,genes], seq_depth)
-  return(cscore_network)
+  CSCORE_result <- CSCORE_IRLS(count_matrix[,genes], seq_depth)
+  return(CSCORE_result)
 }
