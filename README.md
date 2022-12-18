@@ -1,7 +1,7 @@
 # CS-CORE
 [![R-CMD-check](https://github.com/ChangSuBiostats/CS-CORE/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ChangSuBiostats/CS-CORE/actions/workflows/R-CMD-check.yaml)
 
-`CS-CORE` is a R package for cell-type-specific co-expression inference from single cell RNA-sequencing data.
+`CS-CORE` is a R package for cell-type-specific co-expression inference from single cell RNA-sequencing data. It provides an implementation for the statistical method CS-CORE proposed in this [manuscript](https://doi.org/10.1101/2022.12.13.520181).
 
 ## Installation
 
@@ -16,9 +16,9 @@ install_github("ChangSuBiostats/CS-CORE")
 
 ## A toy example
 
-We present here a toy example of inferring cell-type-specific co-expression networks with CS-CORE. 
+We present here a toy example of inferring cell-type-specific co-expression networks using CS-CORE. 
 
-We use the single cell RNA sequencing data on Peripheral blood mononuclear cells (PBMC) from COVID patients and healthy controls from [Wilk et al.](https://www.nature.com/articles/s41591-020-0944-y), which can be downloaded via
+We use the single cell RNA-sequencing data on Peripheral blood mononuclear cells (PBMC) from COVID patients and healthy controls from [Wilk et al.](https://www.nature.com/articles/s41591-020-0944-y), which was also studied in our our [manuscript](https://doi.org/10.1101/2022.12.13.520181). This data set can be downloaded via
 
 ```
 wget https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_per
@@ -46,11 +46,11 @@ mean_exp <- rowMeans(GetAssayData(pbmc_covid_B, slot = 'data'))
 genes_selected <- names(sort.int(mean_exp, decreasing = T))[1:2000]
 
 ## Run CS-CORE
-cscore_network <- CSCORE(pbmc_covid_B, genes = genes_selected)
+CSCORE_result <- CSCORE(pbmc_covid_B, genes = genes_selected)
 # CS-CORE returns a list of three 2000*2000 matrices:
 # co-expression estimates, test statistics and p values
-str(cscore_network) 
-dim(cscore_network[[1]])
+names(CSCORE_result) 
+dim(CSCORE_result[[1]])
 ```
 
 ## Vignette
@@ -58,7 +58,9 @@ Coming soon!
 
 ## Contact us 
 
-Feel free to contact <c.su@yale.edu> for any questions on applying CS-CORE to your own singe cell data. 
+Feel free to contact Chang Su at <c.su@yale.edu> for questions on applying CS-CORE to your own singe cell data. 
 
 ## Reference
-Coming soon!
+**Cell-type-specific co-expression inference from single cell RNA-sequencing data.**
+Chang Su, Zichun Xu, Xinning Shan, Biao Cai, Hongyu Zhao, Jingfei Zhang.
+bioRxiv 2022.12.13.520181; doi: https://doi.org/10.1101/2022.12.13.520181
