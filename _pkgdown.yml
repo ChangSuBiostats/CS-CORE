@@ -1,0 +1,38 @@
+url: https://changsubiostats.github.io/CS-CORE/
+template:
+  bootstrap: 5
+  bootswatch: simplex
+navbar:
+  structure:
+    left:
+    - home
+    - intro
+    - reference
+    - news
+    right: github
+home:
+  sidebar:
+    structure:
+    - license
+    - authors
+    - links
+  links:
+  - text: CS-CORE manuscript
+    href: https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1
+  - text: Zhao lab
+    href: https://zhaocenter.org/
+reference:
+- title: CS-CORE functions
+  desc: |
+    Functions for inferring cell-type-specific co-expression networks
+  contents:
+  - CSCORE
+  - CSCORE_IRLS
+  - post_process_est
+- title: Supporting data sets
+  desc: |
+    Data sets for illustrative purposes
+  contents:
+  - ind_gene_pair
+  - top_enrich_go
+

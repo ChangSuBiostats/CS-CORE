@@ -4,13 +4,16 @@ Version: 0.0.0.9000
 Authors@R: c(
     person("Chang", "Su", , "c.su@yale.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8704-1512")),
-    person("Zichun", "Xu", , "zichun.xu@yale.edu", role = c("aut"))
+    person("Zichun", "Xu", , "zichun.xu@yale.edu", role = c("aut"),
+           comment = c(ORCID = "0000-0002-4001-0321")),
+    person("Xinning", "Shan", , "xinning.shan@yale.edu", role = c("aut"),
+           comment = c(ORCID = "0000-0001-6270-0094"))
     )
 Description: This R package provides an implementation for the statistical method CS-CORE that estimates and tests cell-type-speicific co-expression networks using single cell RNA sequencing data.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
 Imports: 
     stats,
     Seurat
@@ -18,5 +21,9 @@ Depends:
     R (>= 2.10)
 LazyData: true
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+VignetteBuilder: knitr
+URL: https://changsubiostats.github.io/CS-CORE/
