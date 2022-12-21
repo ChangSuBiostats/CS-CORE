@@ -64,7 +64,7 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p><code>CS-CORE</code> is available on github. You can install it using</p>
+<p><code>CS-CORE</code> is available on GitHub. You can install it using</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Load devtools for installing R packages from Github</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
@@ -72,43 +72,9 @@
 <span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ChangSuBiostats/CS-CORE"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="a-toy-example">A toy example<a class="anchor" aria-label="anchor" href="#a-toy-example"></a>
+<h2 id="vignettes">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes"></a>
 </h2>
-<p>We present here a toy example of inferring cell-type-specific co-expression networks using CS-CORE.</p>
-<p>We use the single cell RNA-sequencing data on Peripheral blood mononuclear cells (PBMC) from COVID patients and healthy controls from <a href="https://www.nature.com/articles/s41591-020-0944-y" class="external-link">Wilk et al.</a>, which was also studied in our our <a href="https://doi.org/10.1101/2022.12.13.520181" class="external-link">manuscript</a>. This data set can be downloaded via</p>
-<pre><code>wget https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_per
-ipheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds</code></pre>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## Load CS-CORE</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://changsubiostats.github.io/CS-CORE/">CSCORE</a></span><span class="op">)</span> </span>
-<span></span>
-<span><span class="co">## Load single cell data</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
-<span><span class="va">pbmc_covid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'data/blish_covid.seu.rds'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## Specify the cell type to study</span></span>
-<span><span class="co"># Here, we select B cells from healthy control subjects </span></span>
-<span><span class="co"># to infer B cell-specific co-expression networks in healthy control subjects</span></span>
-<span><span class="va">cells_selected</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">pbmc_covid</span><span class="op">$</span><span class="va">cell.type.coarse</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">'B'</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">(</span><span class="va">pbmc_covid</span><span class="op">$</span><span class="va">Status</span> <span class="op">==</span> <span class="st">"Healthy"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## Specify the genes for which co-expression networks are inferred</span></span>
-<span><span class="co"># Here, we select the top 2,000 highly expressed genes to infer the co-expression network</span></span>
-<span><span class="va">pbmc_covid_B</span> <span class="op">&lt;-</span> <span class="va">pbmc_covid</span><span class="op">[</span>,<span class="va">cells_selected</span><span class="op">]</span> </span>
-<span><span class="va">pbmc_covid_B</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">pbmc_covid_B</span><span class="op">)</span></span>
-<span><span class="va">mean_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/AssayData.html" class="external-link">GetAssayData</a></span><span class="op">(</span><span class="va">pbmc_covid_B</span>, slot <span class="op">=</span> <span class="st">'data'</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">genes_selected</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort.int</a></span><span class="op">(</span><span class="va">mean_exp</span>, decreasing <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2000</span><span class="op">]</span></span>
-<span></span>
-<span><span class="co">## Run CS-CORE</span></span>
-<span><span class="va">CSCORE_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/CSCORE.html">CSCORE</a></span><span class="op">(</span><span class="va">pbmc_covid_B</span>, genes <span class="op">=</span> <span class="va">genes_selected</span><span class="op">)</span></span>
-<span><span class="co"># CS-CORE returns a list of three 2000*2000 matrices:</span></span>
-<span><span class="co"># co-expression estimates, test statistics and p values</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">CSCORE_result</span><span class="op">)</span> </span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">CSCORE_result</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="vignette">Vignette<a class="anchor" aria-label="anchor" href="#vignette"></a>
-</h2>
-<p>Coming soon!</p>
+<p>Check out <a href="https://changsubiostats.github.io/CS-CORE/">https://changsubiostats.github.io/CS-CORE/</a> for a tutorial on using CS-CORE for cell-type-specific co-expression analysis with single cell RNA-sequencing data, which includes inferring co-expressions, extracting co-expressed gene modules and functional enrichment analysis as performed in our manuscript.</p>
 </div>
 <div class="section level2">
 <h2 id="contact-us">Contact us<a class="anchor" aria-label="anchor" href="#contact-us"></a>
