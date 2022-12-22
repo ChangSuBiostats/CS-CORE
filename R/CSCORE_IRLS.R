@@ -129,7 +129,8 @@ post_process_est <- function(est){
   # and also lack of correlation
   est[neg_gene_inds, ] <- 0
   est[, neg_gene_inds] <- 0
-  diag(est)[neg_gene_inds] <- 1
+  # Set all diagonal values to 1
+  diag(est) <- 1
   # Gene pairs with out-of-bound estimates
   print(sprintf('%.4f%% co-expression estimates were greater than 1 and were set to 1.',
                 mean(est[upper.tri(est)] > 1, na.rm = T) * 100))
