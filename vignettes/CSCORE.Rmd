@@ -26,8 +26,7 @@ library(Seurat)
 In this vignette, we use the single cell RNA-sequencing data on Peripheral blood mononuclear cells (PBMC) from COVID patients and healthy controls from [Wilk et al.](https://www.nature.com/articles/s41591-020-0944-y), which was also studied in our [manuscript](https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1). This data set can be downloaded via
 
 ```
-wget https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_per
-ipheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds
+wget https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_peripheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds
 ```
 
 After downloading blish_covid.seu.rds, we load it into the R session
