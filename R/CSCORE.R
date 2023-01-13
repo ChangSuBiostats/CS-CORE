@@ -25,7 +25,7 @@ CSCORE <- function(object, genes, seq_depth = NULL){
   count_matrix <- t(as.matrix(Seurat::GetAssayData(object, slot = 'counts', assay = 'RNA')))
   # Extract / calculate the sequencing depths
   if(is.null(seq_depth)){
-    if(!is.null(object$nCount_RNA)){
+    if('nCount_RNA' %in% colnames(object@meta.data)){
       seq_depth <- object$nCount_RNA
     }else{
       seq_depth <- rowSums(count_matrix)
