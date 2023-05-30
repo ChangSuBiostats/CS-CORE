@@ -1,5 +1,6 @@
 # CS-CORE
 [![R-CMD-check](https://github.com/ChangSuBiostats/CS-CORE/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ChangSuBiostats/CS-CORE/actions/workflows/R-CMD-check.yaml)
+[![DOI](https://zenodo.org/badge/576326164.svg)](https://zenodo.org/badge/latestdoi/576326164)
 
 `CS-CORE` is a R package for cell-type-specific co-expression inference from single cell RNA-sequencing data. It provides an implementation for the statistical method CS-CORE proposed in this [manuscript](https://doi.org/10.1101/2022.12.13.520181).
 
