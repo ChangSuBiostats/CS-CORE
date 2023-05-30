@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette shows an example of applying `CS-CORE` to infer cell-type-specific co-expression networks and extracting co-expressed gene modules for functional enrichment analyses.
+This vignette shows an example of applying `CS-CORE` to infer cell-type-specific co-expression networks and extracting co-expressed gene modules that are enriched for biological functions in cell types.
 
 # 1. Load packages and data
 
@@ -23,7 +23,7 @@ library(CSCORE)
 library(Seurat)
 ```
 
-In this vignette, we use the single cell RNA-sequencing data on Peripheral blood mononuclear cells (PBMC) from COVID patients and healthy controls from [Wilk et al.](https://www.nature.com/articles/s41591-020-0944-y), which was also studied in our [manuscript](https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1). This data set can be downloaded via
+In this vignette, we use the single cell RNA-sequencing data on Peripheral blood mononuclear cells (PBMC) from COVID patients and healthy controls from [Wilk et al.](https://www.nature.com/articles/s41591-020-0944-y), which were also studied in our [manuscript](https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1). This data set can be downloaded via the following bash script 
 
 ```{r, engine = 'bash', eval = FALSE}
 wget https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_peripheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds
@@ -44,15 +44,13 @@ In this example, we focus on B cells and infer the B cell-specific co-expression
 pbmc_B = pbmc[,pbmc$cell.type.coarse %in% 'B']
 ```
 
-Depending on the biological question of interest, one may choose to study the co-expression network for any particular gene set. Here, we chose to infer the co-expression network for the genes with meaningful expression levels in B cells (top 5000 among 26361 genes). There are several reasons for our choice: 
+Depending on the biological question of interest, one may choose to study the co-expression network for any gene set. Here, we chose to infer the co-expression network for the genes with meaningful expression levels in B cells (top 5000 among 26361 genes). There are several reasons for our choice: 
 
 1. All genes with moderate to high expression levels provides a comprehensive and unbiased set of genes that could have meaningful biological functions in a cell type.
 
-2. It is statistically challenging to infer co-expression for genes that have almost all UMI counts equal to 0.
+2. If the genes have much lower expression levels, it would be statistically more challenging and biologically less interesting to infer their co-expressions, as these genes might have almost all UMI counts equal to 0. 
 
-3. It is biologically less interesting to study the co-expressions if the genes are not expressed in a cell type.
-
-However, it will be up to the users's choice to select the gene sets to study. We recommend choosing the gene sets that are of interest to your application.
+In general, it will be up to the users's choice to select the gene sets to study. We recommend choosing the gene sets that are of interest to your application.
 
 ```{r eval = FALSE}
 mean_exp = rowMeans(pbmc_B@assays$RNA@counts/pbmc_B$nCount_RNA)
@@ -62,7 +60,7 @@ genes_selected = names(sort.int(mean_exp, decreasing = T))[1:5000]
 
 # 3. Run `CS-CORE` to infer cell-type-specific co-expression network on the specified gene set
 
-We further subset the B cells to those from healthy control subjects in order to study B-cell specific co-expression network from healthy control cells. Though not demonstrated in this vignette, the inferred network can further be constrasted to networks inferred with B cells from the COVID-19 patients to study dysregulation in B cells' co-expression due to COVID-19 infection.
+We further subset the B cells to those from healthy control subjects in order to study B-cell specific co-expression network among healthy control B cells. 
 
 ```{r eval = FALSE}
 pbmc_B_healthy <- pbmc_B[, pbmc_B$Status == "Healthy"]
@@ -94,7 +92,7 @@ p_matrix_BH <- p_matrix_BH + t(p_matrix_BH)
 CSCORE_coexp[p_matrix_BH > 0.05] <- 0
 ```
 
-Next, based on the thresholded co-expression matrix, we apply [WGCNA](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559) to extract co-expressed gene modules. In particular, we use `CS-CORE` estimates to measure co-expressions for single cell RNA-sequencing data, while the traditional WGNCA workflow was designed for bulk expression data and used Pearson correlations to measure co-expressions.
+Next, based on the thresholded co-expression matrix, we apply [WGCNA](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559) to extract co-expressed gene modules. In particular, we use `CS-CORE` estimates to measure co-expressions for single cell RNA-sequencing data, which replace the Pearson correlations used in traditional WGNCA workflow, that suffer from inflated false positives and attenuation bias on single cell data as demonstrated in our [manuscript](https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1).
 
 ```{r eval = FALSE}
 if (!require(WGCNA)) {
@@ -130,7 +128,7 @@ One can also apply other clustering methods to extract co-expressed gene modules
 
 ## 4.2 Functional enrichment analysis
 
-Gene Ontology (GO) enrichment analysis is one of the common downstream functional enrichment analyses for interpreting the biological pathways implied by co-expressed gene modules. Here, we showcase the GO pathways implied by `CS-CORE` co-expressed gene modules using the R implementation from [Wu et al.](https://pubmed.ncbi.nlm.nih.gov/34557778/).
+Gene Ontology (GO) enrichment analysis is one of the common downstream functional enrichment analyses for interpreting the biological pathways implied by co-expressed gene modules. Here, we showcase the GO pathways enriched in `CS-CORE` co-expressed gene modules using the R implementation from [Wu et al.](https://pubmed.ncbi.nlm.nih.gov/34557778/).
 
 ```{r eval = FALSE}
 if (!require(clusterProfiler)) {
@@ -148,8 +146,8 @@ universe <- genes_selected
 
 # Filter GO terms based on BH-adjusted p values < 0.05
 ####
-## Note: the following code can take a long time to run as 
-## in this example there are 144 co-expressed gene modules from WGCNA
+## Note: the following codes can take a long time to run as 
+## in this example there are more than 100 co-expressed gene modules from WGCNA
 ####
 ego_result <- lapply(1:length(module_list), function(i){
   enrichGO(gene = module_list[[i]],
@@ -162,7 +160,7 @@ ego_result <- lapply(1:length(module_list), function(i){
 })
 ```
 
-There are in total 144 gene modules inferred by WGCNA. For illustrative purposes, we focus on the modules with the strongest enrichment signals (with at least one GO term having adjusted $p$-value smaller than $10^{-3}$; with at least 10 enriched GO terms) and print the top 3 GO terms.
+There are in total 144 gene modules inferred by WGCNA. For illustrative purposes, we focus on the modules with the strongest enrichment signals (with at least one GO term having adjusted $p$-value smaller than $10^{-3}$ and with at least 10 enriched GO terms) and print the top 3 GO terms.
 
 ```{r eval = FALSE}
 top_enrich_clusters <- which(sapply(ego_result, function(x) 
@@ -179,6 +177,10 @@ for(i in 1:length(top_enrich_go)){
 
 At this point, we have reproduced the results in our [manuscript](https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1), Table S6.
 
-This concludes our vignette of using `CS-CORE` to infer cell-type-specific co-expression networks and a typical analysis pipeline for extracting co-expressed gene modules and performing functional enrichment analysis.
+This concludes our vignette of using `CS-CORE` to infer cell-type-specific co-expression networks and a typical pipeline for extracting co-expressed gene modules and performing functional enrichment analysis.
+
+One can also perform a differential co-expression analysis based on the codes provided here. For example, the inferred network of healthy B cells can be constrasted to the network inferred with B cells from the COVID-19 patients to study dysregulation in B cells' co-expression due to COVID-19 infection. For more details please refer the the methods in our [manuscript](https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1).
+
+**Stay tuned!** We are also working on a pipeline for cell-type-specific module-trait association analyses with single cell RNA-seq data based on `CS-CORE` developed here.
 
 
