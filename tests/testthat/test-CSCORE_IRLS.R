@@ -33,11 +33,12 @@ test_that("Co-expression estimates are bounded between -1 and 1 and the matrix i
                   all.equal(est[upper.tri(est)], t(est)[upper.tri(est)])))
 })
 
-test_that("The length of the sequencing depth must be equal to the number of cells", {
+test_that("The length of the sequencing depth must match the number of cells", {
   test_dat = readRDS("fixtures/mic_highly_expressed_500_AD_control")
   count = test_dat[[1]]
   seq_depth = c(test_dat[[2]], 0)
-  expect_error(CSCORE_result = CSCORE_IRLS(X = count, seq_depth = seq_depth))
+  expect_error(CSCORE_IRLS(X = count, seq_depth = seq_depth),
+               "The length of the sequencing depth must match the number of cells.")
 })
 
 test_that("The co-expression estimates and p values are computed correctly", {

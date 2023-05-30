@@ -36,6 +36,9 @@ CSCORE_IRLS <- function(X, seq_depth, post_process = TRUE){
   if (is.null(seq_depth)) {
     seq_depth = apply(X, 1, sum, na.rm = T)
   }
+  if(nrow(X) != length(seq_depth)){
+    stop('The length of the sequencing depth must match the number of cells.')
+  }
   n_cell = nrow(X)
   n_gene = ncol(X)
   seq_depth_sq = seq_depth^2
