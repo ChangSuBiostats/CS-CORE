@@ -72,7 +72,8 @@
     
 <p>This vignette shows an example of applying <code>CS-CORE</code> to
 infer cell-type-specific co-expression networks and extracting
-co-expressed gene modules for functional enrichment analyses.</p>
+co-expressed gene modules that are enriched for biological functions in
+cell types.</p>
 <div class="section level2">
 <h2 id="load-packages-and-data">1. Load packages and data<a class="anchor" aria-label="anchor" href="#load-packages-and-data"></a>
 </h2>
@@ -82,8 +83,8 @@ co-expressed gene modules for functional enrichment analyses.</p>
 <p>In this vignette, we use the single cell RNA-sequencing data on
 Peripheral blood mononuclear cells (PBMC) from COVID patients and
 healthy controls from <a href="https://www.nature.com/articles/s41591-020-0944-y" class="external-link">Wilk et
-al.</a>, which was also studied in our <a href="https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1" class="external-link">manuscript</a>.
-This data set can be downloaded via</p>
+al.</a>, which were also studied in our <a href="https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1" class="external-link">manuscript</a>.
+This data set can be downloaded via the following bash script</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_peripheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds</span></code></pre></div>
 <p>After downloading blish_covid.seu.rds, we load it into the R
 session</p>
@@ -100,22 +101,22 @@ co-expression network.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pbmc_B</span> <span class="op">=</span> <span class="va">pbmc</span><span class="op">[</span>,<span class="va">pbmc</span><span class="op">$</span><span class="va">cell.type.coarse</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">'B'</span><span class="op">]</span></span></code></pre></div>
 <p>Depending on the biological question of interest, one may choose to
-study the co-expression network for any particular gene set. Here, we
-chose to infer the co-expression network for the genes with meaningful
-expression levels in B cells (top 5000 among 26361 genes). There are
-several reasons for our choice:</p>
+study the co-expression network for any gene set. Here, we chose to
+infer the co-expression network for the genes with meaningful expression
+levels in B cells (top 5000 among 26361 genes). There are several
+reasons for our choice:</p>
 <ol style="list-style-type: decimal">
 <li><p>All genes with moderate to high expression levels provides a
 comprehensive and unbiased set of genes that could have meaningful
 biological functions in a cell type.</p></li>
-<li><p>It is statistically challenging to infer co-expression for genes
-that have almost all UMI counts equal to 0.</p></li>
-<li><p>It is biologically less interesting to study the co-expressions
-if the genes are not expressed in a cell type.</p></li>
+<li><p>If the genes have much lower expression levels, it would be
+statistically more challenging and biologically less interesting to
+infer their co-expressions, as these genes might have almost all UMI
+counts equal to 0.</p></li>
 </ol>
-<p>However, it will be up to the users’s choice to select the gene sets
-to study. We recommend choosing the gene sets that are of interest to
-your application.</p>
+<p>In general, it will be up to the users’s choice to select the gene
+sets to study. We recommend choosing the gene sets that are of interest
+to your application.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mean_exp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">pbmc_B</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">RNA</span><span class="op">@</span><span class="va">counts</span><span class="op">/</span><span class="va">pbmc_B</span><span class="op">$</span><span class="va">nCount_RNA</span><span class="op">)</span></span>
 <span><span class="va">genes_selected</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort.int</a></span><span class="op">(</span><span class="va">mean_exp</span>, decreasing <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5000</span><span class="op">]</span></span></code></pre></div>
@@ -125,11 +126,8 @@ your application.</p>
 co-expression network on the specified gene set<a class="anchor" aria-label="anchor" href="#run-cs-core-to-infer-cell-type-specific-co-expression-network-on-the-specified-gene-set"></a>
 </h2>
 <p>We further subset the B cells to those from healthy control subjects
-in order to study B-cell specific co-expression network from healthy
-control cells. Though not demonstrated in this vignette, the inferred
-network can further be constrasted to networks inferred with B cells
-from the COVID-19 patients to study dysregulation in B cells’
-co-expression due to COVID-19 infection.</p>
+in order to study B-cell specific co-expression network among healthy
+control B cells.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pbmc_B_healthy</span> <span class="op">&lt;-</span> <span class="va">pbmc_B</span><span class="op">[</span>, <span class="va">pbmc_B</span><span class="op">$</span><span class="va">Status</span> <span class="op">==</span> <span class="st">"Healthy"</span><span class="op">]</span></span></code></pre></div>
 <p>Run <code>CS-CORE</code> with the subsetted Seurat object and a gene
@@ -161,9 +159,9 @@ Hochberg-adjusted <span class="math inline">\(p\)</span>-values <span class="mat
 <p>Next, based on the thresholded co-expression matrix, we apply <a href="https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559" class="external-link">WGCNA</a>
 to extract co-expressed gene modules. In particular, we use
 <code>CS-CORE</code> estimates to measure co-expressions for single cell
-RNA-sequencing data, while the traditional WGNCA workflow was designed
-for bulk expression data and used Pearson correlations to measure
-co-expressions.</p>
+RNA-sequencing data, which replace the Pearson correlations used in
+traditional WGNCA workflow, that suffer from inflated false positives
+and attenuation bias on single cell data as demonstrated in our <a href="https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1" class="external-link">manuscript</a>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="http://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/" class="external-link">WGCNA</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"WGCNA"</span><span class="op">)</span></span>
@@ -200,7 +198,7 @@ gene modules.</p>
 <p>Gene Ontology (GO) enrichment analysis is one of the common
 downstream functional enrichment analyses for interpreting the
 biological pathways implied by co-expressed gene modules. Here, we
-showcase the GO pathways implied by <code>CS-CORE</code> co-expressed
+showcase the GO pathways enriched in <code>CS-CORE</code> co-expressed
 gene modules using the R implementation from <a href="https://pubmed.ncbi.nlm.nih.gov/34557778/" class="external-link">Wu et al.</a>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va">clusterProfiler</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -216,8 +214,8 @@ gene modules using the R implementation from <a href="https://pubmed.ncbi.nlm.ni
 <span></span>
 <span><span class="co"># Filter GO terms based on BH-adjusted p values &lt; 0.05</span></span>
 <span><span class="co">####</span></span>
-<span><span class="co">## Note: the following code can take a long time to run as </span></span>
-<span><span class="co">## in this example there are 144 co-expressed gene modules from WGCNA</span></span>
+<span><span class="co">## Note: the following codes can take a long time to run as </span></span>
+<span><span class="co">## in this example there are more than 100 co-expressed gene modules from WGCNA</span></span>
 <span><span class="co">####</span></span>
 <span><span class="va">ego_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">module_list</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="fu">enrichGO</span><span class="op">(</span>gene <span class="op">=</span> <span class="va">module_list</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>,</span>
@@ -230,7 +228,7 @@ gene modules using the R implementation from <a href="https://pubmed.ncbi.nlm.ni
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
 <p>There are in total 144 gene modules inferred by WGCNA. For
 illustrative purposes, we focus on the modules with the strongest
-enrichment signals (with at least one GO term having adjusted <span class="math inline">\(p\)</span>-value smaller than <span class="math inline">\(10^{-3}\)</span>; with at least 10 enriched GO
+enrichment signals (with at least one GO term having adjusted <span class="math inline">\(p\)</span>-value smaller than <span class="math inline">\(10^{-3}\)</span> and with at least 10 enriched GO
 terms) and print the top 3 GO terms.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">top_enrich_clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">ego_result</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> </span>
@@ -272,9 +270,18 @@ terms) and print the top 3 GO terms.</p>
 <p>At this point, we have reproduced the results in our <a href="https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1" class="external-link">manuscript</a>,
 Table S6.</p>
 <p>This concludes our vignette of using <code>CS-CORE</code> to infer
-cell-type-specific co-expression networks and a typical analysis
-pipeline for extracting co-expressed gene modules and performing
-functional enrichment analysis.</p>
+cell-type-specific co-expression networks and a typical pipeline for
+extracting co-expressed gene modules and performing functional
+enrichment analysis.</p>
+<p>One can also perform a differential co-expression analysis based on
+the codes provided here. For example, the inferred network of healthy B
+cells can be constrasted to the network inferred with B cells from the
+COVID-19 patients to study dysregulation in B cells’ co-expression due
+to COVID-19 infection. For more details please refer the the methods in
+our <a href="https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1" class="external-link">manuscript</a>.</p>
+<p><strong>Stay tuned!</strong> We are also working on a pipeline for
+cell-type-specific module-trait association analyses with single cell
+RNA-seq data based on <code>CS-CORE</code> developed here.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
