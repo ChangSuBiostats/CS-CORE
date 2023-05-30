@@ -81,9 +81,6 @@ CSCORE_IRLS <- function(X, seq_depth, post_process = TRUE){
   covar = matrix(NA, nrow = n_gene, ncol = n_gene)
   covar <- (t(seq_depth_sq * X_centered/w) %*% (X_centered/w))/(t(seq_depth_sq/w) %*% (seq_depth_sq/w))
 
-  # neg_gene_inds <- which(sigma2 < 0)
-  # sigma2[neg_gene_inds] <- 0
-
   # Evaluate test statistics and p values
   Sigma <- M + outer(seq_depth_sq, sigma2)
   ele_inv_Sigma <- 1/Sigma
@@ -94,9 +91,10 @@ CSCORE_IRLS <- function(X, seq_depth, post_process = TRUE){
   p_value <- 2 * stats::pnorm(abs(test_stat), lower.tail = F)
 
   # Evaluate co-expression estimates
+  neg_gene_inds <- which(sigma2 < 0)
+  sigma2[neg_gene_inds] <- 0
   sigma <- sqrt(sigma2)
   est <- covar/outer(sigma, sigma)
-  diag(est)[!is.na(diag(est))] <- 1
 
   # Post-process the co-expression estimates
   if(post_process) est <- post_process_est(est)
