@@ -81,8 +81,8 @@ CSCORE_IRLS <- function(X, seq_depth, post_process = TRUE){
   covar = matrix(NA, nrow = n_gene, ncol = n_gene)
   covar <- (t(seq_depth_sq * X_centered/w) %*% (X_centered/w))/(t(seq_depth_sq/w) %*% (seq_depth_sq/w))
 
-  neg_gene_inds <- which(sigma2 < 0)
-  sigma2[neg_gene_inds] <- 0
+  # neg_gene_inds <- which(sigma2 < 0)
+  # sigma2[neg_gene_inds] <- 0
 
   # Evaluate test statistics and p values
   Sigma <- M + outer(seq_depth_sq, sigma2)
@@ -96,7 +96,7 @@ CSCORE_IRLS <- function(X, seq_depth, post_process = TRUE){
   # Evaluate co-expression estimates
   sigma <- sqrt(sigma2)
   est <- covar/outer(sigma, sigma)
-  # diag(est)[!is.na(diag(est))] <- 1
+  diag(est)[!is.na(diag(est))] <- 1
 
   # Post-process the co-expression estimates
   if(post_process) est <- post_process_est(est)
@@ -121,7 +121,8 @@ CSCORE_IRLS <- function(X, seq_depth, post_process = TRUE){
 post_process_est <- function(est){
   p <- nrow(est)
   # Post-process CS-CORE estimates
-  neg_gene_inds <- which(is.infinite(diag(est)))
+  neg_gene_inds <- which(sapply(diag(est), function(x) is.infinite(x) | is.na(x)))
+	  #which(is.infinite(diag(est)))
   if(length(neg_gene_inds) > 0){
     print(sprintf('%i among %i genes have negative variance estimates. Their co-expressions with other genes were set to 0.',
                   length(neg_gene_inds), p))
