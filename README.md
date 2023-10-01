@@ -2,7 +2,7 @@
 [![R-CMD-check](https://github.com/ChangSuBiostats/CS-CORE/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ChangSuBiostats/CS-CORE/actions/workflows/R-CMD-check.yaml)
 [![DOI](https://zenodo.org/badge/576326164.svg)](https://zenodo.org/badge/latestdoi/576326164)
 
-`CS-CORE` is a R package for cell-type-specific co-expression inference from single cell RNA-sequencing data. It provides an implementation for the statistical method CS-CORE proposed in this [manuscript](https://doi.org/10.1101/2022.12.13.520181).
+`CS-CORE` is a R package for cell-type-specific co-expression inference from single cell RNA-sequencing data. It provides an implementation for the statistical method CS-CORE proposed in this [paper](https://doi.org/10.1038/s41467-023-40503-7).
 
 ## Installation
 
@@ -21,12 +21,11 @@ The [vignette](https://changsubiostats.github.io/CS-CORE/articles/CSCORE.html) s
 
 ## Contact us 
 
-Feel free to contact Chang Su at <c.su@yale.edu> for questions on applying CS-CORE to your own singe cell data. 
+[Chang Su](www.changsu.org), <chang.su@emory.edu>
 
 ## Reference and more
 
 **Cell-type-specific co-expression inference from single cell RNA-sequencing data.**
-Chang Su, Zichun Xu, Xinning Shan, Biao Cai, Hongyu Zhao, Jingfei Zhang.
-bioRxiv 2022.12.13.520181; doi: https://doi.org/10.1101/2022.12.13.520181
+Su, Chang, et al. "Cell-type-specific co-expression inference from single cell RNA-sequencing data." Nature Communications 14.1 (2023): 4846.
 
 A Python implementation of CS-CORE is also provided [here](https://github.com/ChangSuBiostats/CS-CORE_python).
