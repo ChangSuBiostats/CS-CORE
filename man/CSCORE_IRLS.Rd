@@ -4,31 +4,91 @@
 \alias{CSCORE_IRLS}
 \title{Iteratively reweighted least squares (IRLS) procedure in CS-CORE}
 \source{
-Cell-type-specific co-expression inference from single cell RNA-sequencing data
-Chang Su, Zichun Xu, Xinning Shan, Biao Cai, Hongyu Zhao, Jingfei Zhang;
-bioRxiv 2022.12.13.520181; doi: \url{https://doi.org/10.1101/2022.12.13.520181}
+Su, C., Xu, Z., Shan, X., Cai, B., Zhao, H., & Zhang, J. (2023).
+Cell-type-specific co-expression inference from single cell RNA-sequencing data.
+\emph{Nature Communications}.
+doi: \url{https://doi.org/10.1038/s41467-023-40503-7}
 }
 \usage{
-CSCORE_IRLS(X, seq_depth, post_process = TRUE)
+CSCORE_IRLS(
+  X,
+  seq_depth,
+  covariates = NULL,
+  post_process = TRUE,
+  covariate_level = "z",
+  adjust_setting = c(mean = T, var = T, covar = T),
+  return_all = FALSE
+)
 }
 \arguments{
-\item{X}{A n by p matrix of UMI counts, where n denotes the number of cells and p denotes the number of genes}
+\item{X}{A numeric matrix of UMI counts (\code{n x p}),
+where \code{n} is the number of cells and \code{p} is the number of genes.}
 
-\item{seq_depth}{A length n vector of sequencing depths}
+\item{seq_depth}{A numeric vector of sequencing depths of length \code{n}.}
 
-\item{post_process}{Whether to process the estimated co-expressions such that the estimates are between -1 and 1. Default to TRUE.}
+\item{covariates}{A numeric matrix of covariates (\code{n x K}) to be adjusted for in the moment-based regressions.
+Can be a length n vector if \eqn{K=1}.
+If \code{NULL}, no covariates are adjusted for in the regression.
+Defaults to \code{NULL}.}
+
+\item{post_process}{Logical; whether to rescale the estimated co-expressions to lie between –1 and 1.
+Defaults to \code{TRUE}.}
+
+\item{covariate_level}{A character string indicating whether covariates are assumed to affect
+the underlying gene expression levels (\code{"z"}) or the observed counts (\code{"x"}).
+See the \emph{Details} section for further explanation.
+Defaults to \code{"z"}.}
+
+\item{adjust_setting}{A named logical vector of length 3;
+whether to adjust for covariates at the mean, variance, and covariance level.
+Defaults to \code{c(mean = T,var = T, covar = T)}.}
+
+\item{return_all}{Logical; whether to return all estimates, including the effect sizes for covariates.
+Defaults to \code{FALSE}.}
 }
 \value{
-A list of three p by p matrices:
+A list containing the following components:
 \describe{
-\item{est}{co-expression estimates}
-\item{p_value}{p values}
-\item{test_stat}{test statistics}
+\item{est}{A \eqn{p \times p} matrix of co-expression estimates.}
+\item{p_value}{A \eqn{p \times p} matrix of p-values.}
+\item{test_stat}{A \eqn{p \times p} matrix of test statistics evaluating the statistical significance of co-expression.}
+\item{mu_beta}{A \eqn{k \times p} matrix of regression coefficients from the mean model. Returned if \code{return_all = TRUE}.}
+\item{sigma2_beta}{A \eqn{k \times p} matrix of regression coefficients from the variance model. Returned if \code{return_all = TRUE}.}
+\item{cov_beta}{A \eqn{k \times p \times p} array of regression coefficients from the covariance model. Returned if \code{return_all = TRUE}.}
 }
 }
 \description{
-The iteratively reweighted least squares procedure in CS-CORE for estimating and testing cell-type-specific co-expressions using single cell RNA sequencing data.
-More details on this procedure can be found in the CS-CORE paper: \url{https://doi.org/10.1101/2022.12.13.520181}.
+This function implements the IRLS procedure used in CS-CORE for estimating and testing
+cell-type-specific co-expression from single-cell RNA sequencing data.
+}
+\details{
+Let \eqn{x_{ij}} denote the UMI count of gene \eqn{j} in cell \eqn{i};
+\eqn{s_i} denote the sequencing depth;
+\eqn{\mu_j,\sigma_{jj}, \sigma_{jj'}} denote the mean, variance and covariance;
+\eqn{c_{ik}} denote additional covariate \eqn{k} for cell \eqn{i} (e.g. disease status or cellular state).
+The procedure consists of two main steps:
+\enumerate{
+\item \strong{Mean and variance estimation:} Estimate gene-specific mean and variance parameters
+using two moment-based regressions:
+\itemize{
+\item \strong{Mean model:} \eqn{x_{ij} = s_i (\mu_j + \sum_k c_{ik} \beta_k) + \epsilon_{ij}}
+\item \strong{Variance model:} \eqn{(x_{ij} - s_i \mu_{ij})^2 = s_i \mu_{ij} + s_i^2 (\sigma_{jj} + \sum_k c_{ik} \gamma_k) + \eta_{ij}},
+where \eqn{\mu_{ij} = \mu_j + \sum_k c_{ik} \beta_k}
+}
+
+\item \strong{Covariance estimation and hypothesis testing:} Estimate gene-gene covariance
+and compute test statistics to assess the statistical significance of gene co-expression using a third moment-based regression:
+\itemize{
+\item \strong{Covariance model:} \eqn{(x_{ij} - s_i \mu_{ij})(x_{ij'} - s_i \mu_{ij'}) = s_i^2 (\sigma_{jj'} + \sum_k c_{ik} \theta_k) + \xi_{ijj'}}
+}
+}
+We note that
+\enumerate{
+\item The formulation above assumes that the covariates alter the mean / variance / covariance of underlying gene expression,
+rather than observed counts.
+\item The original CS-CORE published in \url{https://doi.org/10.1038/s41467-023-40503-7}
+did not consider adjusting for covariates \eqn{c_{ik}}'s. This is equivalent to setting \code{covariates} to \code{NULL}.
+}
 }
 \examples{
 ## Toy example:
