@@ -20,8 +20,12 @@ install_github("ChangSuBiostats/CS-CORE")
 
 ## Vignettes
 
-The [vignette](https://changsubiostats.github.io/CS-CORE/articles/CSCORE.html) shows an example of using CS-CORE for cell-type-specific co-expression analysis with single cell RNA-sequencing data. 
+1. [Get started](https://changsubiostats.github.io/CS-CORE/articles/CSCORE.html) shows an example of using CS-CORE for cell-type-specific co-expression analysis with single cell RNA-sequencing data. 
 It includes inferring co-expressions, extracting co-expressed gene modules and functional enrichment analysis.
+
+2. [Covariate adjustment](https://changsubiostats.github.io/CS-CORE/articles/covariate_adjustment.html) shows how to adjust for 
+covariates in co-expression inference with CS-CORE.
+
 
 ## Contact us 
 

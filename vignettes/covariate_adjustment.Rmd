@@ -50,7 +50,7 @@ library(Seurat)
 ``` r
 # wget https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_peripheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds
 
-pbmc <- readRDS('/Users/csu30/Library/CloudStorage/OneDrive-Emory/Projects/CS-CORE/Rpackage/blish_covid.seu.rds')
+pbmc <- readRDS('blish_covid.seu.rds')
 pbmc <- UpdateSeuratObject(pbmc) # update the obsolete Seurat object
 pbmc_B = pbmc[,pbmc$cell.type.coarse %in% 'B']
 mean_exp = rowMeans(pbmc_B@assays$RNA@counts/pbmc_B$nCount_RNA)
