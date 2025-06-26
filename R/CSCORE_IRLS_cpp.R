@@ -60,7 +60,7 @@
 #'     \item{\code{n_iter}}{Maximum number of iterations.}
 #'     \item{\code{eps}}{Convergence threshold for log-ratio change \code{delta}, computed as \code{abs(log(theta / theta_prev))}.}
 #'     \item{\code{verbose}}{Logical; whether to print the convergence metric (\code{delta}) at each iteration.}
-#'     \item{\code{conv}}{Character string; determine convergence based on \code{q95} (95% quantile) or \code{max} of \code{delta}.}
+#'     \item{\code{conv}}{Character string; determine convergence based on \code{q95} (95\% quantile) or \code{max} of \code{delta}.}
 #'   }
 #'   Defaults to \code{list(n_iter = 10, eps = 0.05, verbose = FALSE, conv = "q95")}.
 #' @param return_all Logical; whether to return all estimates, including the effect sizes for covariates.

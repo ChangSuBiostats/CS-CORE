@@ -2,7 +2,7 @@
 % Please edit documentation in R/WLS_helper.R
 \name{WLS_mean}
 \alias{WLS_mean}
-\title{Weighted Least Squares Mean and Variance Estimation}
+\title{Weighted Least Squares Mean and Variance Estimation (Rcpp)}
 \usage{
 WLS_mean(D, X, W)
 }

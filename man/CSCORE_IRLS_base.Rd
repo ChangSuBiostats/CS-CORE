@@ -2,7 +2,7 @@
 % Please edit documentation in R/CSCORE_IRLS_base.R
 \name{CSCORE_IRLS_base}
 \alias{CSCORE_IRLS_base}
-\title{Original implementation Iteratively reweighted least squares (IRLS) procedure (archived)}
+\title{Iteratively reweighted least squares (IRLS) procedure in CS-CORE (base R, archived)}
 \source{
 Su, C., Xu, Z., Shan, X., Cai, B., Zhao, H., & Zhang, J. (2023).
 Cell-type-specific co-expression inference from single cell RNA-sequencing data.

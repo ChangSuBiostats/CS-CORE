@@ -2,7 +2,7 @@
 % Please edit documentation in R/WLS_helper.R
 \name{WLS_cov}
 \alias{WLS_cov}
-\title{Weighted Least Squares Covariance Estimation}
+\title{Weighted Least Squares Covariance Estimation (Rcpp)}
 \usage{
 WLS_cov(D, X, W)
 }

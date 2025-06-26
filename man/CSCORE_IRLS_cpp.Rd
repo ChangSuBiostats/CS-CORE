@@ -2,7 +2,7 @@
 % Please edit documentation in R/CSCORE_IRLS_cpp.R
 \name{CSCORE_IRLS_cpp}
 \alias{CSCORE_IRLS_cpp}
-\title{Iteratively reweighted least squares (IRLS) procedure in CS-CORE}
+\title{Iteratively reweighted least squares (IRLS) procedure in CS-CORE (Rcpp)}
 \source{
 Su, C., Xu, Z., Shan, X., Cai, B., Zhao, H., & Zhang, J. (2023).
 Cell-type-specific co-expression inference from single cell RNA-sequencing data.
@@ -44,6 +44,15 @@ Defaults to \code{"z"}.}
 whether to adjust for covariates at the mean, variance, and covariance level.
 Must be named \code{c("mean", "var", "covar")}.
 Defaults to \code{c(mean = T,var = T, covar = T)}.}
+
+\item{IRLS_par}{Optional. A named list of length 4 specifying parameters for the IRLS algorithm:
+\describe{
+\item{\code{n_iter}}{Maximum number of iterations.}
+\item{\code{eps}}{Convergence threshold for log-ratio change \code{delta}, computed as \code{abs(log(theta / theta_prev))}.}
+\item{\code{verbose}}{Logical; whether to print the convergence metric (\code{delta}) at each iteration.}
+\item{\code{conv}}{Character string; determine convergence based on \code{q95} (95\\% quantile) or \code{max} of \code{delta}.}
+}
+Defaults to \code{list(n_iter = 10, eps = 0.05, verbose = FALSE, conv = "q95")}.}
 
 \item{return_all}{Logical; whether to return all estimates, including the effect sizes for covariates.
 Defaults to \code{FALSE}.}
