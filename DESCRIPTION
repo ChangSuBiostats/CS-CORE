@@ -1,8 +1,8 @@
 Package: CSCORE
 Title: Cell-type-specific co-expression inference from single cell RNA-sequencing data
-Version: 0.0.0.9000
+Version: 1.0.1
 Authors@R: c(
-    person("Chang", "Su", , "c.su@yale.edu", role = c("aut", "cre"),
+    person("Chang", "Su", , "chang.su@emory.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8704-1512")),
     person("Zichun", "Xu", , "zichun.xu@yale.edu", role = c("aut"),
            comment = c(ORCID = "0000-0002-4001-0321")),
@@ -13,16 +13,19 @@ Description: This R package provides an implementation for the statistical metho
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Imports: 
     stats,
-    Seurat
+    Seurat,
+    Rcpp
+LinkingTo: Rcpp, RcppArmadillo
 Depends: 
     R (>= 2.10)
 LazyData: true
 Suggests: 
     knitr,
     rmarkdown,
+    MASS,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr

@@ -2,14 +2,29 @@ url: https://changsubiostats.github.io/CS-CORE/
 template:
   bootstrap: 5
   bootswatch: simplex
+  math-rendering: mathjax
+articles:
+- title: Getting started
+  contents: CSCORE
+- title: Covariate Adjustment
+  contents: covariate_adjustment
 navbar:
   structure:
     left:
     - home
     - intro
+    - articles
     - reference
     - news
     right: github
+  components:
+    articles:
+      text: Vignettes
+      menu:
+      - text: CS-CORE
+        href: articles/CSCORE.html
+      - text: Covariates adjustment
+        href: articles/covariate_adjustment.html
 home:
   sidebar:
     structure:
@@ -17,18 +32,21 @@ home:
     - authors
     - links
   links:
-  - text: CS-CORE manuscript
-    href: https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1
-  - text: Zhao lab
-    href: https://zhaocenter.org/
+  - text: CS-CORE for co-expression
+    href: https://doi.org/10.1038/s41467-023-40503-7
+  - text: scMultiMap for peak-gene association
+    href: https://doi.org/10.1038/s41467-025-59306-z
 reference:
 - title: CS-CORE functions
   desc: |
     Functions for inferring cell-type-specific co-expression networks
   contents:
   - CSCORE
-  - CSCORE_IRLS
+  - CSCORE_IRLS_cpp
+  - CSCORE_IRLS_base
   - post_process_est
+  - WLS_mean
+  - WLS_cov
 - title: Supporting data sets
   desc: |
     Data sets for illustrative purposes
