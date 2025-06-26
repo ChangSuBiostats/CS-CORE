@@ -23,7 +23,7 @@ library(CSCORE)
 library(Seurat)
 ```
 
-In this vignette, we use the single cell RNA-sequencing data on Peripheral blood mononuclear cells (PBMC) from COVID patients and healthy controls from [Wilk et al.](https://www.nature.com/articles/s41591-020-0944-y), which were also studied in our [manuscript](https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1). This data set can be downloaded via the following bash script 
+In this vignette, we use the single cell RNA-sequencing data on Peripheral blood mononuclear cells (PBMC) from COVID patients and healthy controls from [Wilk et al.](https://www.nature.com/articles/s41591-020-0944-y), which were also studied in our [paper](https://www.nature.com/articles/s41467-023-40503-7). This data set can be downloaded via the following bash script 
 
 ```{r, engine = 'bash', eval = FALSE}
 wget https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_peripheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds
@@ -31,14 +31,13 @@ wget https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_o
 
 After downloading blish_covid.seu.rds, we load it into the R session
 ```{r eval = FALSE}
-pbmc <- readRDS('data/blish_covid.seu.rds')
-# Use the original UMI counts stored in Assay 'RNA'
-DefaultAssay(pbmc) <- 'RNA'
+pbmc <- readRDS('blish_covid.seu.rds')
+pbmc <- UpdateSeuratObject(pbmc) # update the obsolete Seurat object
 ```
 
 # 2. Select cell types and gene sets to study
 
-In this example, we focus on B cells and infer the B cell-specific co-expression network.
+In this example, we focus on B cells and infer the B cell–specific co-expression network. In general, we strongly recommend subsetting to the cell type of interest before inferring co-expression. Otherwise, the estimates may be affected by [Simpson's paradox](https://pmc.ncbi.nlm.nih.gov/articles/PMC4579334/#:~:text=(A)%20Simpson's%20Paradox%20describes%20), capturing associations driven by differences between cell types (e.g.correlations between cell type marker genes), rather than gene-gene co-expression within a homogeneous cell population.
 
 ```{r eval = FALSE}
 pbmc_B = pbmc[,pbmc$cell.type.coarse %in% 'B']
@@ -66,11 +65,15 @@ We further subset the B cells to those from healthy control subjects in order to
 pbmc_B_healthy <- pbmc_B[, pbmc_B$Status == "Healthy"]
 ```
 
-Run `CS-CORE` with the subsetted Seurat object and a gene set of interest.
+Run `CS-CORE` with the subsetted Seurat object and a gene set of interest. We note that CSCORE operates on the raw UMI counts, i.e. `object[['RNA']]@counts` for the Seurat object `object`.
 
 ```{r eval = FALSE}
 CSCORE_result <- CSCORE(pbmc_B_healthy, genes = genes_selected)
+# faster yet more memory intensive:
+# CSCORE_result <- CSCORE(pbmc_B_healthy, genes = genes_selected, IRLS_version = 'bash_R')
 ```
+
+Since version 1.0.1 (updated June 2025), CSCORE provides a new Rcpp implementation of moment-based regressions that offers improved memory efficiency and supports covariate adjustment (see [Covariate adjustment](covariate_adjustment.html)). The original implementation at the time of publication (version 0.0.0.9) was written in base R, and while it is approximately 10 times faster, it is also significantly more memory intensive (by a factor of 10–100). We recommend choosing between the two implementations based on available memory resources and the need for computational speed and covariate adjustment.
 
 # 4. Downstream analysis on the co-expression network
 
@@ -175,11 +178,11 @@ for(i in 1:length(top_enrich_go)){
 }
 ```
 
-At this point, we have reproduced the results in our [manuscript](https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1), Table S6.
+At this point, we have reproduced the results in our [manuscript](https://doi.org/10.1038/s41467-023-40503-7), Table S6.
 
 This concludes our vignette of using `CS-CORE` to infer cell-type-specific co-expression networks and a typical pipeline for extracting co-expressed gene modules and performing functional enrichment analysis.
 
-One can also perform a differential co-expression analysis based on the codes provided here. For example, the inferred network of healthy B cells can be constrasted to the network inferred with B cells from the COVID-19 patients to study dysregulation in B cells' co-expression due to COVID-19 infection. For more details please refer the the methods in our [manuscript](https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1).
+One can also perform a differential co-expression analysis based on the codes provided here. For example, the inferred network of healthy B cells can be constrasted to the network inferred with B cells from the COVID-19 patients to study dysregulation in B cells' co-expression due to COVID-19 infection. For more details please refer the the methods in our [manuscript](https://doi.org/10.1038/s41467-023-40503-7).
 
 **Stay tuned!** We are also working on a pipeline for cell-type-specific module-trait association analyses with single cell RNA-seq data based on `CS-CORE` developed here.
 
