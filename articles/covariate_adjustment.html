@@ -130,12 +130,10 @@ the same dataset as in <a href="CSCORE.html">Getting started</a>.</p>
 <p>This dataset comes with detailed cell-level covariates:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pbmc_B_healthy</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "orig.ident"       "nCount_RNA"       "nFeature_RNA"     "percent.mt"      </span></span>
-<span><span class="co">#&gt;  [5] "percent.rps"      "percent.rpl"      "percent.rrna"     "nCount_SCT"      </span></span>
-<span><span class="co">#&gt;  [9] "nFeature_SCT"     "SCT_snn_res.1"    "seurat_clusters"  "singler"         </span></span>
-<span><span class="co">#&gt; [13] "Admission.level"  "cell.type.fine"   "cell.type.coarse" "cell.type"       </span></span>
-<span><span class="co">#&gt; [17] "IFN1"             "HLA1"             "Donor.orig"       "Donor.full"      </span></span>
-<span><span class="co">#&gt; [21] "Donor"            "Status"           "Sex"              "DPS"             </span></span>
+<span><span class="co">#&gt;  [1] "orig.ident"       "nCount_RNA"       "nFeature_RNA"     "percent.mt"       "percent.rps"      "percent.rpl"     </span></span>
+<span><span class="co">#&gt;  [7] "percent.rrna"     "nCount_SCT"       "nFeature_SCT"     "SCT_snn_res.1"    "seurat_clusters"  "singler"         </span></span>
+<span><span class="co">#&gt; [13] "Admission.level"  "cell.type.fine"   "cell.type.coarse" "cell.type"        "IFN1"             "HLA1"            </span></span>
+<span><span class="co">#&gt; [19] "Donor.orig"       "Donor.full"       "Donor"            "Status"           "Sex"              "DPS"             </span></span>
 <span><span class="co">#&gt; [25] "DTF"              "Admission"        "Ventilated"</span></span></code></pre></div>
 <p>As an example, we choose to adjust for <code>Sex</code> and
 <code>percent.mt</code>. To run CS-CORE with covariate adjustment,
@@ -147,11 +145,11 @@ use</p>
 <span><span class="co">#&gt; [INFO] Adjust for covariates: percent.mt, Sex </span></span>
 <span><span class="co">#&gt; [INFO] Variables in the design matrix: percent.mt, SexM </span></span>
 <span><span class="co">#&gt; [INFO] IRLS converged after 3 iterations.</span></span>
-<span><span class="co">#&gt; [INFO] Starting WLS for covariance at Thu Jun 26 16:29:20 2025</span></span>
+<span><span class="co">#&gt; [INFO] Starting WLS for covariance at Thu Jun 26 17:09:48 2025</span></span>
 <span><span class="co">#&gt; [INFO] 1 among 200 genes have invalid variance estimates. Their co-expressions with other genes were set to 0.</span></span>
 <span><span class="co">#&gt; [INFO] 0.0854% co-expression estimates were greater than 1 and were set to 1.</span></span>
 <span><span class="co">#&gt; [INFO] 0.0101% co-expression estimates were smaller than -1 and were set to -1.</span></span>
-<span><span class="co">#&gt; [INFO] Finished WLS. Elapsed time: 1.8732 seconds.</span></span></code></pre></div>
+<span><span class="co">#&gt; [INFO] Finished WLS. Elapsed time: 1.8762 seconds.</span></span></code></pre></div>
 <p>By default, <code>CSCORE</code> extracts the covariates from the
 Seurat object and construct a design matrix with scaled and centered
 covariates. To understand the detailed impact of covariate adjustment,
@@ -159,10 +157,10 @@ we also compare with the results without covariate adjustment.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">CSCORE_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/CSCORE.html">CSCORE</a></span><span class="op">(</span><span class="va">pbmc_B_healthy</span>, genes <span class="op">=</span> <span class="va">genes_selected</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [INFO] IRLS converged after 3 iterations.</span></span>
-<span><span class="co">#&gt; [INFO] Starting WLS for covariance at Thu Jun 26 16:29:22 2025</span></span>
+<span><span class="co">#&gt; [INFO] Starting WLS for covariance at Thu Jun 26 17:09:50 2025</span></span>
 <span><span class="co">#&gt; [INFO] 0.0101% co-expression estimates were greater than 1 and were set to 1.</span></span>
 <span><span class="co">#&gt; [INFO] 0.0000% co-expression estimates were smaller than -1 and were set to -1.</span></span>
-<span><span class="co">#&gt; [INFO] Finished WLS. Elapsed time: 1.1614 seconds.</span></span></code></pre></div>
+<span><span class="co">#&gt; [INFO] Finished WLS. Elapsed time: 1.2249 seconds.</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># compare co-expression estimates for a random set of gene pairs</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42002</span><span class="op">)</span></span>
@@ -173,19 +171,14 @@ we also compare with the results without covariate adjustment.</p>
 <span>     xlab <span class="op">=</span> <span class="st">'CS-CORE'</span>, ylab <span class="op">=</span> <span class="st">'CS-CORE adjusted'</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">'Co-expression estimates'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,col<span class="op">=</span><span class="st">'red'</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="figure/figrho-1.png" alt="plot of chunk figrho"><div class="figcaption">plot of chunk figrho</div>
-</div>
-<pre><code><span><span class="co">#&gt; Error in dev.off(): QuartzBitmap_Output - unable to open file 'vignettes/figure/figrho-1.png'</span></span></code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<p><img src="figure/figrho-1.png"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">CSCORE_result</span><span class="op">$</span><span class="va">test_stat</span><span class="op">[</span><span class="va">random_pairs</span><span class="op">]</span>,</span>
 <span>     <span class="va">CSCORE_result_adj</span><span class="op">$</span><span class="va">test_stat</span><span class="op">[</span><span class="va">random_pairs</span><span class="op">]</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">'CS-CORE'</span>, ylab <span class="op">=</span> <span class="st">'CS-CORE adjusted'</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">'Test_stat'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,col<span class="op">=</span><span class="st">'red'</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="figure/figt-1.png" alt="plot of chunk figt"><div class="figcaption">plot of chunk figt</div>
-</div>
+<p><img src="figure/figt-1.png"></p>
 <p>It seems that the co-expression for most gene pairs are similar with
 and without covariate adjustment. We recommend users to sanity check
 this and examine the impact of covariate adjustment on co-expression
@@ -203,11 +196,10 @@ additional parameters: <code>adjust_setting</code> and
 <h3 id="adjust_setting">
 <code>adjust_setting</code><a class="anchor" aria-label="anchor" href="#adjust_setting"></a>
 </h3>
-<p>We provide these two options in <code><a href="../reference/CSCORE_IRLS_cpp.html">CSCORE_IRLS_cpp()</a></code>, which
-is the function underlying <code>CSCORE</code>.
-<code>adjust_setting</code> allows you to choose which regression model
-to adjust covariates for. For example, if
-<code>adjust_setting=c(mean = T, var = F, covar = T)</code>, this is
+<p>We provide these two options in <a href="CSCORE_IRLS_cpp.html">CSCORE_IRLS_cpp</a>, which is the function
+underlying <code>CSCORE</code>. <code>adjust_setting</code> allows you
+to choose which regression model to adjust covariates for. For example,
+if <code>adjust_setting=c(mean = T, var = F, covar = T)</code>, this is
 equivalent to running the following regressions:</p>
 <p><span class="math display">\[
 x_{ij} = s_i (\mu_j + \sum_k c_{ik} \beta_k) + \epsilon_{ij}

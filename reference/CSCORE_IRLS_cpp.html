@@ -5,7 +5,7 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Iteratively reweighted least squares (IRLS) procedure in CS-CORE (Rcpp) — CSCORE_IRLS_cpp"></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Iteratively reweighted least squares (IRLS) procedure in CS-CORE (Rcpp) — CSCORE_IRLS_cpp"><meta name="description" content="Estimate and test cell-type-specific co-expression using the IRLS procedure with optional covariate adjustment."><meta property="og:description" content="Estimate and test cell-type-specific co-expression using the IRLS procedure with optional covariate adjustment."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -43,6 +43,7 @@
     </div>
 
     <div class="ref-description section level2">
+    <p>Estimate and test cell-type-specific co-expression using the IRLS procedure with optional covariate adjustment.</p>
     </div>
 
     <div class="section level2">
@@ -116,31 +117,46 @@ Defaults to <code>c(mean = T,var = T, covar = T)</code>.</p></dd>
 <dd><p>Logical; whether to print the convergence metric (<code>delta</code>) at each iteration.</p></dd>
 
 <dt><code>conv</code></dt>
-<dd><p>Character string; determine convergence based on <code>q95</code> (95\<!-- % quantile) or \code{max} of \code{delta}.} --></p></dd>
+<dd><p>Character string; determine convergence based on <code>q95</code> (0.95 quantile) or <code>max</code> of <code>delta</code>.</p></dd>
 
-Defaults to list(n_iter = 10, eps = 0.05, verbose = FALSE, conv = "q95").
-</dl><p>return_allLogical; whether to return all estimates, including the effect sizes for covariates.
+
+</dl><p>Defaults to <code>list(n_iter = 10, eps = 0.05, verbose = FALSE, cov = "q95")</code>.</p></dd>
+
+
+<dt id="arg-return-all">return_all<a class="anchor" aria-label="anchor" href="#arg-return-all"></a></dt>
+<dd><p>Logical; whether to return all estimates, including the effect sizes for covariates.
 Defaults to <code>FALSE</code>.</p></dd>
 
-</dl><p>A list containing the following components:
-</p><dl><dt>est</dt>
-<dd><p>A \(p \times p\) matrix of co-expression estimates.</p></dd><dt>p_value</dt>
-<dd><p>A \(p \times p\) matrix of p-values.</p></dd><dt>test_stat</dt>
-<dd><p>A \(p \times p\) matrix of test statistics evaluating the statistical significance of co-expression.</p></dd><dt>mu_beta</dt>
-<dd><p>A \(k \times p\) matrix of regression coefficients from the mean model. Returned if <code>return_all = TRUE</code>.</p></dd><dt>sigma2_beta</dt>
-<dd><p>A \(k \times p\) matrix of regression coefficients from the variance model. Returned if <code>return_all = TRUE</code>.</p></dd><dt>cov_beta</dt>
-<dd><p>A \(k \times p \times p\) array of regression coefficients from the covariance model. Returned if <code>return_all = TRUE</code>.</p></dd></dl>
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A list containing the following components:</p><dl><dt>est</dt>
+<dd><p>A \(p \times p\) matrix of co-expression estimates.</p></dd>
+
+<dt>p_value</dt>
+<dd><p>A \(p \times p\) matrix of p-values.</p></dd>
+
+<dt>test_stat</dt>
+<dd><p>A \(p \times p\) matrix of test statistics evaluating the statistical significance of co-expression.</p></dd>
+
+<dt>mu_beta</dt>
+<dd><p>A \(k \times p\) matrix of regression coefficients from the mean model. Returned if <code>return_all = TRUE</code>.</p></dd>
+
+<dt>sigma2_beta</dt>
+<dd><p>A \(k \times p\) matrix of regression coefficients from the variance model. Returned if <code>return_all = TRUE</code>.</p></dd>
+
+<dt>cov_beta</dt>
+<dd><p>A \(k \times p \times p\) array of regression coefficients from the covariance model. Returned if <code>return_all = TRUE</code>.</p></dd>
 
 
-Estimate and test cell-type-specific co-expression using the IRLS procedure with optional covariate adjustment.
-
-
-Let \(x_{ij}\) denote the UMI count of gene \(j\) in cell \(i\);
+</dl></div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Let \(x_{ij}\) denote the UMI count of gene \(j\) in cell \(i\);
 \(s_i\) denote the sequencing depth;
 \(\mu_j,\sigma_{jj}, \sigma_{jj'}\) denote the mean, variance and covariance;
 \(c_{ik}\) denote additional covariate \(k\) for cell \(i\) (e.g. disease status or cellular state).
-The procedure consists of two main steps:
-<ol><li><p><strong>Mean and variance estimation:</strong> Estimate gene-specific mean and variance parameters
+The procedure consists of two main steps:</p><ol><li><p><strong>Mean and variance estimation:</strong> Estimate gene-specific mean and variance parameters
 using two moment-based regressions:</p><ul><li><p><strong>Mean model:</strong> \(x_{ij} = s_i (\mu_j + \sum_k c_{ik} \beta_k) + \epsilon_{ij}\)</p></li>
 <li><p><strong>Variance model:</strong> \((x_{ij} - s_i \mu_{ij})^2 = s_i \mu_{ij} + s_i^2 (\sigma_{jj} + \sum_k c_{ik} \gamma_k) + \eta_{ij}\),
 where \(\mu_{ij} = \mu_j + \sum_k c_{ik} \beta_k\)</p></li>
@@ -148,27 +164,38 @@ where \(\mu_{ij} = \mu_j + \sum_k c_{ik} \beta_k\)</p></li>
 <li><p><strong>Covariance estimation and hypothesis testing:</strong> Estimate gene-gene covariance
 and compute test statistics to assess the statistical significance of gene co-expression using a third moment-based regression:</p><ul><li><p><strong>Covariance model:</strong> \((x_{ij} - s_i \mu_{ij})(x_{ij'} - s_i \mu_{ij'}) = s_i^2 (\sigma_{jj'} + \sum_k c_{ik} \theta_k) + \xi_{ijj'}\)</p></li>
 </ul></li>
-</ol>
-We note that
-<ol><li><p>The formulation above assumes that the covariates alter the mean / variance / covariance of underlying gene expression,
+</ol><p>We note that</p><ol><li><p>The formulation above assumes that the covariates alter the mean / variance / covariance of underlying gene expression,
 rather than observed counts. If you believe that the covariates directly affect the observed counts independent of underlying gene expression
 (e.g. \(x_{ij}|z_{ij} \sim \text{Poisson}(s_i z_{ij}+\sum_k c_{ik} \beta_k)\) or \(x_{ij} = s_i \mu_j  + \sum_k c_{ik} \beta_k + \epsilon_{ij}\)),
 please specify <code>covariate_level="x"</code>.</p></li>
 <li><p>The original CS-CORE published in <a href="https://doi.org/10.1038/s41467-023-40503-7" class="external-link">https://doi.org/10.1038/s41467-023-40503-7</a>
 did not consider adjusting for covariates \(c_{ik}\)'s. This is equivalent to setting <code>covariates</code> to <code>NULL</code>.</p></li>
-</ol>
-Note: This is an R wrapper for the <code>CSCORE_IRLS_cpp_impl()</code> function implemented in Rcpp.
-
-
-## Toy example:
-## run CSCORE on a simulated independent gene pair
-cscore_example &lt;- CSCORE_IRLS_cpp(ind_gene_pair$counts, ind_gene_pair$seq_depths)## Estimated co-expression between two genes
-cscore_example$est[1,2]
-# close to 0: 0.007820124## p-values
-cscore_example$p_value[1,2]
-# not significant: 0.961981
+</ol><p>Note: This is an R wrapper for the <code>CSCORE_IRLS_cpp_impl()</code> function implemented in Rcpp.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## Toy example:</span></span></span>
+<span class="r-in"><span><span class="co">## run CSCORE on a simulated independent gene pair</span></span></span>
+<span class="r-in"><span><span class="va">cscore_example</span> <span class="op">&lt;-</span> <span class="fu">CSCORE_IRLS_cpp</span><span class="op">(</span><span class="va">ind_gene_pair</span><span class="op">$</span><span class="va">counts</span>, <span class="va">ind_gene_pair</span><span class="op">$</span><span class="va">seq_depths</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] IRLS converged after 2 iterations.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] Starting WLS for covariance at Thu Jun 26 22:26:33 2025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] 0.0000% co-expression estimates were greater than 1 and were set to 1.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] 0.0000% co-expression estimates were smaller than -1 and were set to -1.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [INFO] Finished WLS. Elapsed time: 0.0001 seconds.</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Estimated co-expression between two genes</span></span></span>
+<span class="r-in"><span><span class="va">cscore_example</span><span class="op">$</span><span class="va">est</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.007820124</span>
+<span class="r-in"><span><span class="co"># close to 0: 0.007820124</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## p-values</span></span></span>
+<span class="r-in"><span><span class="va">cscore_example</span><span class="op">$</span><span class="va">p_value</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.961981</span>
+<span class="r-in"><span><span class="co"># not significant: 0.961981</span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
