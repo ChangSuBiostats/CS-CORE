@@ -26,7 +26,9 @@
 #' We note that
 #' \enumerate{
 #'   \item The formulation above assumes that the covariates alter the mean / variance / covariance of underlying gene expression,
-#'   rather than observed counts.
+#'   rather than observed counts. If you believe that the covariates directly affect the observed counts independent of underlying gene expression
+#'   (e.g. \eqn{x_{ij}|z_{ij} \sim \text{Poisson}(s_i z_{ij}+\sum_k c_{ik} \beta_k)} or \eqn{x_{ij} = s_i \mu_j  + \sum_k c_{ik} \beta_k + \epsilon_{ij}}),
+#'   please specify \code{covariate_level="x"}.
 #'   \item The original CS-CORE published in <https://doi.org/10.1038/s41467-023-40503-7>
 #'   did not consider adjusting for covariates \eqn{c_{ik}}'s. This is equivalent to setting \code{covariates} to \code{NULL}.
 #' }
@@ -38,18 +40,19 @@
 #' @param X A numeric matrix of UMI counts (\code{n x p}),
 #'   where \code{n} is the number of cells and \code{p} is the number of genes.
 #' @param seq_depth A numeric vector of sequencing depths of length \code{n}.
-#' @param covariates A numeric matrix of covariates (\code{n x K}) to be adjusted for in the moment-based regressions.
+#' @param covariates Optional. A numeric matrix of covariates (\code{n x K}) to be adjusted for in the moment-based regressions.
 #'   Can be a length n vector if \eqn{K=1}.
 #'   If \code{NULL}, no covariates are adjusted for in the regression.
 #'   Defaults to \code{NULL}.
-#' @param post_process Logical; whether to rescale the estimated co-expressions to lie between –1 and 1.
+#' @param post_process Optional. Logical; whether to rescale the estimated co-expressions to lie between –1 and 1.
 #'   Defaults to \code{TRUE}.
-#' @param covariate_level A character string indicating whether covariates are assumed to affect
+#' @param covariate_level Optional. A character string indicating whether covariates are assumed to affect
 #'   the underlying gene expression levels (\code{"z"}) or the observed counts (\code{"x"}).
 #'   See the *Details* section for further explanation.
 #'   Defaults to \code{"z"}.
-#' @param adjust_setting A named logical vector of length 3;
+#' @param adjust_setting Optional. A named logical vector of length 3;
 #'   whether to adjust for covariates at the mean, variance, and covariance level.
+#'   Must be named \code{c("mean", "var", "covar")}.
 #'   Defaults to \code{c(mean = T,var = T, covar = T)}.
 #' @param return_all Logical; whether to return all estimates, including the effect sizes for covariates.
 #'   Defaults to \code{FALSE}.
@@ -63,20 +66,7 @@
 #'   \item{sigma2_beta}{A \eqn{k \times p} matrix of regression coefficients from the variance model. Returned if \code{return_all = TRUE}.}
 #'   \item{cov_beta}{A \eqn{k \times p \times p} array of regression coefficients from the covariance model. Returned if \code{return_all = TRUE}.}
 #' }
-#' @export
-#'
-#' @examples
-#' ## Toy example:
-#' ## run CSCORE on a simulated independent gene pair
-#' cscore_example <- CSCORE_IRLS(ind_gene_pair$counts, ind_gene_pair$seq_depths)
-#'
-#' ## Estimated co-expression between two genes
-#' cscore_example$est[1,2]
-#' # close to 0: 0.007820124
-#'
-#' ## p-values
-#' cscore_example$p_value[1,2]
-#' # not significant: 0.961981
+#' @keywords internal
 #'
 
 CSCORE_IRLS <- function(X, seq_depth,
@@ -99,7 +89,7 @@ CSCORE_IRLS <- function(X, seq_depth,
       if(nrow(X) != length(covariates)) stop('The length of the covariate vector should match the number of cells.')
     }else{
       if(nrow(X) != nrow(covariates)) stop('The number of rows in the covariate matrix should match the number of cells.')
-      message(sprintf('Regression will adjust for %i covariates', ncol(covariates)))
+      message(sprintf('The design matrix for regression has %i columns', ncol(covariates) + 1))
     }
   }
   n_cell = nrow(X)
@@ -171,11 +161,12 @@ CSCORE_IRLS <- function(X, seq_depth,
   neg_gene_inds <- which(sigma2 < 0)
   sigma2[neg_gene_inds] <- 0
   sigma <- sqrt(sigma2)
+  diag(covar) <- sigma
   est <- covar/outer(sigma, sigma)
   test_stat <- ts_res$test_stat
 
   # Post-process the co-expression estimates
-  diag(est) <- 1
+  #diag(est) <- 1
   if(post_process) est <- post_process_est(est)
   rownames(est) <- colnames(est) <- rownames(p_value) <- colnames(p_value) <- rownames(test_stat) <- colnames(test_stat) <- colnames(X)
   result_list <- list(est = est, p_value = p_value, test_stat = test_stat)
@@ -187,82 +178,3 @@ CSCORE_IRLS <- function(X, seq_depth,
   return(result_list)
 }
 
-
-#' Post-process IRLS estimates
-#'
-#' The IRLS procedure does not guarantee the variance estimates to be postive nor the co-expression parameters to be bounded.
-#' To address this, this function evaluates the percentage of genes with negative variance estimates;
-#' sets the their co-expressions to 0 as these genes do not have sufficient biological variations.
-#' This function also evaluates the percentage of gene pairs with out-of-bound co-expression estimates;
-#' sets the co-expressions greater than 1 to 1; set the co-expressions smaller than -1 to -1.
-#'
-#' @param est Estimated co-expression matrix from IRLS
-#'
-#' @return Post-processed correlation matrix
-#'
-#' @export
-#'
-post_process_est <- function(est){
-  p <- nrow(est)
-  # Post-process CS-CORE estimates
-  neg_gene_inds <- which(sapply(diag(est), function(x) is.infinite(x) | is.na(x)))
-	  #which(is.infinite(diag(est)))
-  if(length(neg_gene_inds) > 0){
-    print(sprintf('%i among %i genes have negative variance estimates. Their co-expressions with other genes were set to 0.',
-                  length(neg_gene_inds), p))
-  }
-  # Negative variances suggest insufficient biological variation,
-  # and also lack of correlation
-  est[neg_gene_inds, ] <- 0
-  est[, neg_gene_inds] <- 0
-  # Set all diagonal values to 1
-  diag(est) <- 1
-  # Gene pairs with out-of-bound estimates
-  print(sprintf('%.4f%% co-expression estimates were greater than 1 and were set to 1.',
-                mean(est[upper.tri(est)] > 1, na.rm = T) * 100))
-  print(sprintf('%.4f%% co-expression estimates were smaller than -1 and were set to -1.',
-                mean(est[upper.tri(est)] < -1, na.rm = T) * 100))
-  est[est > 1] <- 1
-  est[est < -1] <- -1
-  return(est)
-}
-
-#' Set the design matrix for moment-based regressions
-#'
-#'
-#' @param s A numeric vector of sequencing depths (for mean regression) or squared sequencing depths (for variance and covariance)
-#' @param D A numeric matrix of intercept and covariates (\code{n x K})
-#' @param adjust_setting Logical; whether to adjust for covariates
-#' @param covariate_level A character string indicating whether covariates are assumed to affect
-#'   the underlying gene expression levels (\code{"z"}) or the observed counts (\code{"x"}).
-#'
-#' @return Design matrix (n by K) for moment-based regressions
-#'
-#'
-set_D <- function(s, D, adjust_setting, covariate_level){
-  if(!adjust_setting){
-    return(matrix(s, ncol = 1))
-  }else{
-    if(covariate_level == 'z'){
-      return(s * D)
-    }else if(covariate_level == 'x'){
-      return(cbind(s, D[,-1]))
-    }
-  }
-}
-
-#' Check for non-integer values in a matrix
-#'
-#' This function checks whether a numeric matrix contains any non-integer values.
-#'
-#' @param mat A numeric matrix.
-#'
-#' @return A logical value: \code{TRUE} if any element is non-integer, otherwise \code{FALSE}.
-#'
-#'
-has_non_integer <- function(mat) {
-  for (val in mat) {
-    if (abs(val - round(val)) > .Machine$double.eps^0.5) return(TRUE)
-  }
-  return(FALSE)
-}

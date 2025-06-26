@@ -1,4 +1,4 @@
-#' Original implementation Iteratively reweighted least squares (IRLS) procedure (archived)
+#' Iteratively reweighted least squares (IRLS) procedure in CS-CORE (base R, archived)
 #'
 #' This function was originally implemented in 2023 and included in the first release of the CS-CORE R package.
 #' It has since been replaced by \code{\link{CSCORE_IRLS}} for two main reasons:

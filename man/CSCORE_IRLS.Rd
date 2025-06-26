@@ -26,21 +26,22 @@ where \code{n} is the number of cells and \code{p} is the number of genes.}
 
 \item{seq_depth}{A numeric vector of sequencing depths of length \code{n}.}
 
-\item{covariates}{A numeric matrix of covariates (\code{n x K}) to be adjusted for in the moment-based regressions.
+\item{covariates}{Optional. A numeric matrix of covariates (\code{n x K}) to be adjusted for in the moment-based regressions.
 Can be a length n vector if \eqn{K=1}.
 If \code{NULL}, no covariates are adjusted for in the regression.
 Defaults to \code{NULL}.}
 
-\item{post_process}{Logical; whether to rescale the estimated co-expressions to lie between –1 and 1.
+\item{post_process}{Optional. Logical; whether to rescale the estimated co-expressions to lie between –1 and 1.
 Defaults to \code{TRUE}.}
 
-\item{covariate_level}{A character string indicating whether covariates are assumed to affect
+\item{covariate_level}{Optional. A character string indicating whether covariates are assumed to affect
 the underlying gene expression levels (\code{"z"}) or the observed counts (\code{"x"}).
 See the \emph{Details} section for further explanation.
 Defaults to \code{"z"}.}
 
-\item{adjust_setting}{A named logical vector of length 3;
+\item{adjust_setting}{Optional. A named logical vector of length 3;
 whether to adjust for covariates at the mean, variance, and covariance level.
+Must be named \code{c("mean", "var", "covar")}.
 Defaults to \code{c(mean = T,var = T, covar = T)}.}
 
 \item{return_all}{Logical; whether to return all estimates, including the effect sizes for covariates.
@@ -85,22 +86,11 @@ and compute test statistics to assess the statistical significance of gene co-ex
 We note that
 \enumerate{
 \item The formulation above assumes that the covariates alter the mean / variance / covariance of underlying gene expression,
-rather than observed counts.
+rather than observed counts. If you believe that the covariates directly affect the observed counts independent of underlying gene expression
+(e.g. \eqn{x_{ij}|z_{ij} \sim \text{Poisson}(s_i z_{ij}+\sum_k c_{ik} \beta_k)} or \eqn{x_{ij} = s_i \mu_j  + \sum_k c_{ik} \beta_k + \epsilon_{ij}}),
+please specify \code{covariate_level="x"}.
 \item The original CS-CORE published in \url{https://doi.org/10.1038/s41467-023-40503-7}
 did not consider adjusting for covariates \eqn{c_{ik}}'s. This is equivalent to setting \code{covariates} to \code{NULL}.
 }
 }
-\examples{
-## Toy example:
-## run CSCORE on a simulated independent gene pair
-cscore_example <- CSCORE_IRLS(ind_gene_pair$counts, ind_gene_pair$seq_depths)
-
-## Estimated co-expression between two genes
-cscore_example$est[1,2]
-# close to 0: 0.007820124
-
-## p-values
-cscore_example$p_value[1,2]
-# not significant: 0.961981
-
-}
+\keyword{internal}

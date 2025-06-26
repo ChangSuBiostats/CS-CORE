@@ -2,30 +2,71 @@
 % Please edit documentation in R/CSCORE.R
 \name{CSCORE}
 \alias{CSCORE}
-\title{Run CS-CORE to infer the cell-type-specific co-expression network}
+\title{CS-CORE for cell-type-specific co-expression network inference}
 \usage{
-CSCORE(object, genes, seq_depth = NULL)
+CSCORE(
+  object,
+  genes,
+  seq_depth = NULL,
+  covariate_names = NULL,
+  adjust_setting = c(mean = T, var = T, covar = T),
+  IRLS_version = "Rcpp",
+  IRLS_par = list(n_iter = 10, eps = 0.05, verbose = FALSE)
+)
 }
 \arguments{
-\item{object}{A Seurat single cell object}
+\item{object}{A Seurat object containing single-cell RNA-seq data.
+The object should be subsetted to cells of a single cell type to ensure cell-type-specific inference.
+CS-CORE requires raw UMI counts as input, and assumes that the raw count matrix is stored in the \code{"counts"} slot of the \code{"RNA"} assay
+(i.e., \code{object[["RNA"]]@counts}).}
 
-\item{genes}{A vector of gene names, for which the co-expression network will be estimated}
+\item{genes}{A character vector of gene names (length \eqn{p}) for which the co-expression network will be estimated.}
 
-\item{seq_depth}{A length n vector of sequencing depths. If "NULL", then it will be calculated as the total number of UMI counts in each cell}
+\item{seq_depth}{A numeric vector of sequencing depths (length \eqn{n}).
+If \code{NULL}, sequencing depth will be computed as the total UMI count per cell.
+Defaults to \code{NULL}.}
+
+\item{covariate_names}{Optional. A character vector specifying the names of cell-level covariates to adjust for in the regression models.
+These variables will be extracted from \code{object@meta.data[, covariate_names]}. Defaults to \code{NULL}.}
+
+\item{adjust_setting}{Optional. A named logical vector of length 3 indicating whether to adjust for covariates in the estimation of mean, variance, and covariance.
+Must be named \code{c("mean", "var", "covar")}. Defaults to \code{c(mean = TRUE, var = TRUE, covar = TRUE)}.}
+
+\item{IRLS_version}{Optional. A character string specifying the IRLS implementation to use: \code{"Rcpp"} or \code{"base_R"}.
+Only the \code{"Rcpp"} version supports covariate adjustment. The \code{"base_R"} version does not.
+When applicable, \code{"Rcpp"} offers improved memory efficiency (~10-100 times) but may be slower (~10 times),
+while \code{"base_R"} is faster but more memory intensive.
+Defaults to \code{"Rcpp"}.}
+
+\item{IRLS_par}{Optional. A named list of length 3 specifying parameters for the IRLS algorithm:
+\describe{
+\item{\code{n_iter}}{Maximum number of iterations.}
+\item{\code{eps}}{Convergence threshold for log-ratio change \code{delta}, computed as \code{abs(log(theta / theta_prev))}.}
+\item{\code{verbose}}{Logical; whether to print the convergence metric (\code{delta}) at each iteration.}
+}
+Defaults to \code{list(n_iter = 10, eps = 0.05, verbose = FALSE)}.}
 }
 \value{
 A list of three p by p matrices:
 \describe{
-\item{est}{co-expression estimates}
-\item{p_value}{p values}
-\item{test_stat}{test statistics}
+\item{est}{Matrix of co-expression estimates.}
+\item{p_value}{Matrix of p-values for testing co-expression.}
+\item{test_stat}{Matrix of test statistics for evaluating the significance of co-expression.}
 }
 }
 \description{
-Run CS-CORE on a Seurat object to infer the cell-type-specific co-expression network for a specified set of genes.
-Note that the Seurat object should have already been subsetted to cells from the same cell type,
-in order to infer cell-type-specific co-expressions.
+Run CS-CORE on a Seurat object to infer the cell-type-specific co-expression network for a specified set of genes,
+with optional adjustment for covariates.
+For more details on the covariate adjustment and the moment-based regression,
+please refer to \link{CSCORE_IRLS}.
 }
 \examples{
-# to be added
+# See a full example at:
+# https://changsubiostats.github.io/CS-CORE/articles/CSCORE.html
+
+}
+\seealso{
+\link{CSCORE_IRLS}
+
+\href{https://changsubiostats.github.io/CS-CORE/articles/CSCORE.html}{CS-CORE online tutorial}
 }
