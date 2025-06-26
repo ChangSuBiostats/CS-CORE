@@ -92,7 +92,7 @@ plot(CSCORE_result$est[random_pairs],
 abline(0,1,col='red')
 ```
 
-```{r echo=F}
+```{r echo=F, eval=F}
 png('vignettes/figure/figrho-1.png', width = 480, height = 480)
 plot(CSCORE_result$est[random_pairs],
      CSCORE_result_adj$est[random_pairs],

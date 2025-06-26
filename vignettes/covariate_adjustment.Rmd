@@ -62,12 +62,10 @@ This dataset comes with detailed cell-level covariates:
 
 ``` r
 colnames(pbmc_B_healthy@meta.data)
-#>  [1] "orig.ident"       "nCount_RNA"       "nFeature_RNA"     "percent.mt"      
-#>  [5] "percent.rps"      "percent.rpl"      "percent.rrna"     "nCount_SCT"      
-#>  [9] "nFeature_SCT"     "SCT_snn_res.1"    "seurat_clusters"  "singler"         
-#> [13] "Admission.level"  "cell.type.fine"   "cell.type.coarse" "cell.type"       
-#> [17] "IFN1"             "HLA1"             "Donor.orig"       "Donor.full"      
-#> [21] "Donor"            "Status"           "Sex"              "DPS"             
+#>  [1] "orig.ident"       "nCount_RNA"       "nFeature_RNA"     "percent.mt"       "percent.rps"      "percent.rpl"     
+#>  [7] "percent.rrna"     "nCount_SCT"       "nFeature_SCT"     "SCT_snn_res.1"    "seurat_clusters"  "singler"         
+#> [13] "Admission.level"  "cell.type.fine"   "cell.type.coarse" "cell.type"        "IFN1"             "HLA1"            
+#> [19] "Donor.orig"       "Donor.full"       "Donor"            "Status"           "Sex"              "DPS"             
 #> [25] "DTF"              "Admission"        "Ventilated"
 ```
 
@@ -81,11 +79,11 @@ CSCORE_result_adj <- CSCORE(pbmc_B_healthy,
 #> [INFO] Adjust for covariates: percent.mt, Sex 
 #> [INFO] Variables in the design matrix: percent.mt, SexM 
 #> [INFO] IRLS converged after 3 iterations.
-#> [INFO] Starting WLS for covariance at Thu Jun 26 16:29:20 2025
+#> [INFO] Starting WLS for covariance at Thu Jun 26 17:09:48 2025
 #> [INFO] 1 among 200 genes have invalid variance estimates. Their co-expressions with other genes were set to 0.
 #> [INFO] 0.0854% co-expression estimates were greater than 1 and were set to 1.
 #> [INFO] 0.0101% co-expression estimates were smaller than -1 and were set to -1.
-#> [INFO] Finished WLS. Elapsed time: 1.8732 seconds.
+#> [INFO] Finished WLS. Elapsed time: 1.8762 seconds.
 ```
 
 By default, `CSCORE` extracts the covariates from the Seurat object and construct a design matrix with scaled and centered covariates. To understand the detailed impact of covariate adjustment, we also compare with the results without covariate adjustment.
@@ -94,10 +92,10 @@ By default, `CSCORE` extracts the covariates from the Seurat object and construc
 ``` r
 CSCORE_result <- CSCORE(pbmc_B_healthy, genes = genes_selected)
 #> [INFO] IRLS converged after 3 iterations.
-#> [INFO] Starting WLS for covariance at Thu Jun 26 16:29:22 2025
+#> [INFO] Starting WLS for covariance at Thu Jun 26 17:09:50 2025
 #> [INFO] 0.0101% co-expression estimates were greater than 1 and were set to 1.
 #> [INFO] 0.0000% co-expression estimates were smaller than -1 and were set to -1.
-#> [INFO] Finished WLS. Elapsed time: 1.1614 seconds.
+#> [INFO] Finished WLS. Elapsed time: 1.2249 seconds.
 ```
 
 
@@ -113,12 +111,9 @@ plot(CSCORE_result$est[random_pairs],
 abline(0,1,col='red')
 ```
 
-![plot of chunk figrho](figure/figrho-1.png)
+![](figure/figrho-1.png)
 
 
-```
-#> Error in dev.off(): QuartzBitmap_Output - unable to open file 'vignettes/figure/figrho-1.png'
-```
 
 
 ``` r
@@ -129,7 +124,7 @@ plot(CSCORE_result$test_stat[random_pairs],
 abline(0,1,col='red')
 ```
 
-![plot of chunk figt](figure/figt-1.png)
+![](figure/figt-1.png)
 
 
 
@@ -141,7 +136,8 @@ It seems that the co-expression for most gene pairs are similar with and without
 The application above adjusts for covariates in the underlying expression levels' mean, variance, and covariance. For users who wish to have more fine-grained control on the regression models, we provide two additional parameters: `adjust_setting` and `covariate_level`.
 
 ## `adjust_setting`
-We provide these two options in `CSCORE_IRLS_cpp()`, which is the function underlying `CSCORE`. `adjust_setting` allows you to choose which regression model to adjust covariates for. For example, if `adjust_setting=c(mean = T, var = F, covar = T)`, this is equivalent to running the following regressions:
+
+We provide these two options in [CSCORE_IRLS_cpp](CSCORE_IRLS_cpp.html), which is the function underlying `CSCORE`. `adjust_setting` allows you to choose which regression model to adjust covariates for. For example, if `adjust_setting=c(mean = T, var = F, covar = T)`, this is equivalent to running the following regressions:
 
 $$
 x_{ij} = s_i (\mu_j + \sum_k c_{ik} \beta_k) + \epsilon_{ij}

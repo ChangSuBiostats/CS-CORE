@@ -16,7 +16,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: 
     stats,
-    Seurat,
     Rcpp
 LinkingTo: Rcpp, RcppArmadillo
 Depends: 
@@ -26,6 +25,7 @@ Suggests:
     knitr,
     rmarkdown,
     MASS,
+    Seurat,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
