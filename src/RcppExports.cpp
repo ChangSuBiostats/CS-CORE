@@ -11,6 +11,27 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// CSCORE_IRLS_cpp_impl
+Rcpp::List CSCORE_IRLS_cpp_impl(const arma::mat& X, const arma::vec& seq_depth_sq, const arma::mat& D_mu, const arma::mat& D_sigma2, const arma::mat& D_sigma, const bool post_process, const int n_iter, const double eps, const bool verbose, const std::string& conv, const bool return_all);
+RcppExport SEXP _CSCORE_CSCORE_IRLS_cpp_impl(SEXP XSEXP, SEXP seq_depth_sqSEXP, SEXP D_muSEXP, SEXP D_sigma2SEXP, SEXP D_sigmaSEXP, SEXP post_processSEXP, SEXP n_iterSEXP, SEXP epsSEXP, SEXP verboseSEXP, SEXP convSEXP, SEXP return_allSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type seq_depth_sq(seq_depth_sqSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type D_mu(D_muSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type D_sigma2(D_sigma2SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type D_sigma(D_sigmaSEXP);
+    Rcpp::traits::input_parameter< const bool >::type post_process(post_processSEXP);
+    Rcpp::traits::input_parameter< const int >::type n_iter(n_iterSEXP);
+    Rcpp::traits::input_parameter< const double >::type eps(epsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type conv(convSEXP);
+    Rcpp::traits::input_parameter< const bool >::type return_all(return_allSEXP);
+    rcpp_result_gen = Rcpp::wrap(CSCORE_IRLS_cpp_impl(X, seq_depth_sq, D_mu, D_sigma2, D_sigma, post_process, n_iter, eps, verbose, conv, return_all));
+    return rcpp_result_gen;
+END_RCPP
+}
 // WLS_mean
 arma::mat WLS_mean(arma::mat D, arma::mat X, arma::mat W);
 RcppExport SEXP _CSCORE_WLS_mean(SEXP DSEXP, SEXP XSEXP, SEXP WSEXP) {
@@ -39,6 +60,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_CSCORE_CSCORE_IRLS_cpp_impl", (DL_FUNC) &_CSCORE_CSCORE_IRLS_cpp_impl, 11},
     {"_CSCORE_WLS_mean", (DL_FUNC) &_CSCORE_WLS_mean, 3},
     {"_CSCORE_WLS_cov", (DL_FUNC) &_CSCORE_WLS_cov, 3},
     {NULL, NULL, 0}

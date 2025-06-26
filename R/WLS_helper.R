@@ -1,4 +1,4 @@
-#' Weighted Least Squares Covariance Estimation
+#' Weighted Least Squares Covariance Estimation (Rcpp)
 #'
 #' Computes WLS estimates of gene-gene covariance and test statistics that assess
 #' the statistical significance of co-expression using moment-based regressions.
@@ -18,7 +18,7 @@ WLS_cov <- function(D, X, W) {
   .Call(`_CSCORE_WLS_cov`, D, X, W)
 }
 
-#' Weighted Least Squares Mean and Variance Estimation
+#' Weighted Least Squares Mean and Variance Estimation (Rcpp)
 #'
 #' Compute WLS estimates of mean or variance for all p genes
 #'
