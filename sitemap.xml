@@ -1,45 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://changsubiostats.github.io/CS-CORE/404.html</loc>
-  </url>
-  <url>
-    <loc>https://changsubiostats.github.io/CS-CORE/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://changsubiostats.github.io/CS-CORE/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://changsubiostats.github.io/CS-CORE/articles/CSCORE.html</loc>
-  </url>
-  <url>
-    <loc>https://changsubiostats.github.io/CS-CORE/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://changsubiostats.github.io/CS-CORE/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://changsubiostats.github.io/CS-CORE/index.html</loc>
-  </url>
-  <url>
-    <loc>https://changsubiostats.github.io/CS-CORE/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://changsubiostats.github.io/CS-CORE/reference/CSCORE.html</loc>
-  </url>
-  <url>
-    <loc>https://changsubiostats.github.io/CS-CORE/reference/CSCORE_IRLS.html</loc>
-  </url>
-  <url>
-    <loc>https://changsubiostats.github.io/CS-CORE/reference/ind_gene_pair.html</loc>
-  </url>
-  <url>
-    <loc>https://changsubiostats.github.io/CS-CORE/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://changsubiostats.github.io/CS-CORE/reference/post_process_est.html</loc>
-  </url>
-  <url>
-    <loc>https://changsubiostats.github.io/CS-CORE/reference/top_enrich_go.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://changsubiostats.github.io/CS-CORE/404.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/LICENSE-text.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/LICENSE.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/articles/CSCORE.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/articles/covariate_adjustment.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/articles/index.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/authors.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/index.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/news/index.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/CSCORE.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/CSCORE_IRLS.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/CSCORE_IRLS_base.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/CSCORE_IRLS_cpp.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/WLS_cov.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/WLS_mean.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/has_non_integer.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/ind_gene_pair.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/index.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/post_process_est.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/set_D.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/top_enrich_go.html</loc></url>
 </urlset>
+
