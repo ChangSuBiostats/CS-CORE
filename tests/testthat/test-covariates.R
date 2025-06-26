@@ -36,8 +36,10 @@ test_that("The covaiates' effect sizes are computed correctly", {
   }
   x_mat <- matrix(rpois(n = 2*n, lambda=z_mat * sim_seq_depths), nrow = n, ncol = 2)
 
-  cscore_example <- CSCORE_IRLS(x_mat, sim_seq_depths,
-                                covariates = g, return_all = TRUE)
+  cscore_example <- CSCORE_IRLS_cpp(x_mat, sim_seq_depths,
+                                    covariates = g,
+                                    IRLS_par = list(n_iter = 10, eps = 0.05, verbose = FALSE, conv = 'max'),
+                                    return_all = TRUE)
   expect_equal(cscore_example$est[1,2], 0.1068046, tolerance = 1e-6)
   expect_equal(cscore_example$p_value[1,2], 0.5056709, tolerance = 1e-6)
   expect_equal(cscore_example$mu_beta,
