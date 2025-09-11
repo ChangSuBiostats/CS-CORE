@@ -16,9 +16,9 @@ using namespace Rcpp;
  */
 // [[Rcpp::export]]
 Rcpp::List WLS_cov(arma::mat D, arma::mat X, arma::mat W) {
-  int n = D.n_rows;   // number of rows of D (i.e., number of cells)
-  int k = D.n_cols;   // number of columns of D (i.e., number of covariates)
-  int p = X.n_cols;   // number of genes
+  const arma::uword n = D.n_rows;   // number of rows of D (i.e., number of cells)
+  const arma::uword k = D.n_cols;   // number of columns of D (i.e., number of covariates)
+  const arma::uword p = X.n_cols;   // number of genes
 
   if (X.n_rows != n) {
     stop("Dimensions of design matrix and gene expression datado not match.");
@@ -30,8 +30,8 @@ Rcpp::List WLS_cov(arma::mat D, arma::mat X, arma::mat W) {
 
   arma::mat D_T = D.t();  // precompute transpose once
 
-  for (int j = 0; j < p; ++j) {
-    for (int jprime = j; jprime < p; ++jprime) {
+  for (arma::uword j = 0; j < p; ++j) {
+    for (arma::uword jprime = j; jprime < p; ++jprime) {
 
       // Compute x_prod = X[, j] * X[, j']
       arma::vec x_prod = X.col(j) % X.col(jprime);  // element-wise product
@@ -76,8 +76,8 @@ Rcpp::List WLS_cov(arma::mat D, arma::mat X, arma::mat W) {
     }
   }
 
-  for (int j = 0; j < p; ++j) {
-    for (int jprime = j + 1; jprime < p; ++jprime) {
+  for (arma::uword j = 0; j < p; ++j) {
+    for (arma::uword jprime = j + 1; jprime < p; ++jprime) {
       result.slice(j).col(jprime) = result.slice(jprime).col(j);
       ts_mat(jprime, j) = ts_mat(j, jprime);
     }

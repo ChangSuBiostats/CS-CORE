@@ -5,11 +5,11 @@ CSCORE_IRLS_cpp_impl <- function(X, seq_depth_sq, D_mu, D_sigma2, D_sigma, post_
     .Call(`_CSCORE_CSCORE_IRLS_cpp_impl`, X, seq_depth_sq, D_mu, D_sigma2, D_sigma, post_process, n_iter, eps, verbose, conv, return_all)
 }
 
-WLS_mean <- function(D, X, W) {
-    .Call(`_CSCORE_WLS_mean`, D, X, W)
-}
-
 WLS_cov <- function(D, X, W) {
     .Call(`_CSCORE_WLS_cov`, D, X, W)
+}
+
+WLS_mean <- function(D, X, W) {
+    .Call(`_CSCORE_WLS_mean`, D, X, W)
 }
 

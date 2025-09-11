@@ -32,19 +32,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// WLS_mean
-arma::mat WLS_mean(arma::mat D, arma::mat X, arma::mat W);
-RcppExport SEXP _CSCORE_WLS_mean(SEXP DSEXP, SEXP XSEXP, SEXP WSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type D(DSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type W(WSEXP);
-    rcpp_result_gen = Rcpp::wrap(WLS_mean(D, X, W));
-    return rcpp_result_gen;
-END_RCPP
-}
 // WLS_cov
 Rcpp::List WLS_cov(arma::mat D, arma::mat X, arma::mat W);
 RcppExport SEXP _CSCORE_WLS_cov(SEXP DSEXP, SEXP XSEXP, SEXP WSEXP) {
@@ -58,11 +45,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// WLS_mean
+arma::mat WLS_mean(arma::mat D, arma::mat X, arma::mat W);
+RcppExport SEXP _CSCORE_WLS_mean(SEXP DSEXP, SEXP XSEXP, SEXP WSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type D(DSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type W(WSEXP);
+    rcpp_result_gen = Rcpp::wrap(WLS_mean(D, X, W));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_CSCORE_CSCORE_IRLS_cpp_impl", (DL_FUNC) &_CSCORE_CSCORE_IRLS_cpp_impl, 11},
-    {"_CSCORE_WLS_mean", (DL_FUNC) &_CSCORE_WLS_mean, 3},
     {"_CSCORE_WLS_cov", (DL_FUNC) &_CSCORE_WLS_cov, 3},
+    {"_CSCORE_WLS_mean", (DL_FUNC) &_CSCORE_WLS_mean, 3},
     {NULL, NULL, 0}
 };
 

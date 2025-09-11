@@ -15,9 +15,9 @@ using namespace Rcpp;
  */
 // [[Rcpp::export]]
 arma::mat WLS_mean(arma::mat D, arma::mat X, arma::mat W) {
-  int n = D.n_rows;   // number of rows of D (i.e., number of cells)
-  int k = D.n_cols;   // number of columns of D (i.e., number of covariates)
-  int p = X.n_cols;   // number of genes
+  const arma::uword n = D.n_rows;   // number of rows of D (i.e., number of cells)
+  const arma::uword k = D.n_cols;   // number of columns of D (i.e., number of covariates)
+  const arma::uword p = X.n_cols;   // number of genes
 
   if (X.n_rows != n) {
     stop("Dimensions of design matrix and gene expression data do not match.");
@@ -27,7 +27,7 @@ arma::mat WLS_mean(arma::mat D, arma::mat X, arma::mat W) {
 
   arma::mat D_T = D.t();  // precompute transpose once
 
-  for (int j = 0; j < p; ++j) {
+  for (arma::uword j = 0; j < p; ++j) {
     // Compute D^T * diag(w) * D
     arma::mat DTD_w = D_T * (D.each_col() % W.col(j));
 

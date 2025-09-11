@@ -1,11 +1,11 @@
+#include <RcppArmadillo.h>
+// [[Rcpp::depends(RcppArmadillo)]]
 #include "WLS_mean.h"
 #include "WLS_cov.h"
-#include <RcppArmadillo.h>
 #include <chrono>
 #include <ctime>
 #include <iomanip>
 #include <string>
-// [[Rcpp::depends(RcppArmadillo)]]
 
 using namespace Rcpp;
 
@@ -100,8 +100,8 @@ Rcpp::List CSCORE_IRLS_cpp_impl(const arma::mat& X,
                                 const std::string& conv = "q95",
                                 const bool return_all = false) {
 
-  int n = X.n_rows;
-  int p = X.n_cols;
+  const arma::uword n = X.n_rows;
+  const arma::uword p = X.n_cols;
 
   arma::mat W = arma::ones<arma::mat>(X.n_rows, X.n_cols);
   arma::mat mu_beta = WLS_mean(D_mu, X, W);
