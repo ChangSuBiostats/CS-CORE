@@ -1,5 +1,6 @@
 # CS-CORE
 [![R-CMD-check](https://github.com/ChangSuBiostats/CS-CORE/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ChangSuBiostats/CS-CORE/actions/workflows/R-CMD-check.yaml)
+![Windows CI](https://github.com/ChangSuBiostats/CS-CORE/actions/workflows/windows-check.yaml/badge.svg)
 [![DOI](https://zenodo.org/badge/576326164.svg)](https://zenodo.org/badge/latestdoi/576326164)
 
 `CS-CORE` is a R package for cell-type-specific co-expression inference from single cell RNA-sequencing data. 
@@ -29,7 +30,8 @@ covariates in co-expression inference with CS-CORE.
 
 ## Contact us 
 
-[Chang Su](www.changsu.org), <chang.su@emory.edu>
+For issues or feature requests, please visit GitHub Issues. If an issue remains unanswered for a while, 
+you are welcome to email the maintainer at <chang.su@emory.edu>
 
 ## A Python version
 

@@ -1,3 +1,16 @@
+# CSCORE 1.0.2 (2025-09-13)
+
+## Improvements
+* Fixed BLAS/LAPACK linking on Windows by adding `src/Makevars.win`.
+* Standardized dimension and loop variables to use `arma::uword`, removing signed/unsigned comparison warnings.
+* Ensured compatibility with R 4.5.1 and RcppArmadillo 15.x (validated via win-builder and GitHub Actions CI).
+* Improved consistency of header includes (`RcppArmadillo.h` first) for more robust builds.
+
+## Infrastructure
+* Added GitHub Actions workflow for Windows CI with latest R and RcppArmadillo.
+* Added Windows build status badge to README.
+
+
 # CSCORE 1.0.1 (2025-06-26)
 ## Features
 * Added support for covariate adjustment in moment-based regressions for estimating mean, variance, and covariance.

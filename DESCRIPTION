@@ -1,6 +1,6 @@
 Package: CSCORE
 Title: Cell-type-specific co-expression inference from single cell RNA-sequencing data
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: c(
     person("Chang", "Su", , "chang.su@emory.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8704-1512")),
