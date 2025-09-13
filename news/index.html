@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CSCORE</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,21 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.2" id="cscore-102-2025-09-13">CSCORE 1.0.2 (2025-09-13)<a class="anchor" aria-label="anchor" href="#cscore-102-2025-09-13"></a></h2>
+<div class="section level3">
+<h3 id="improvements-1-0-2">Improvements<a class="anchor" aria-label="anchor" href="#improvements-1-0-2"></a></h3>
+<ul><li>Fixed BLAS/LAPACK linking on Windows by adding <code>src/Makevars.win</code>.</li>
+<li>Standardized dimension and loop variables to use <code>arma::uword</code>, removing signed/unsigned comparison warnings.</li>
+<li>Ensured compatibility with R 4.5.1 and RcppArmadillo 15.x (validated via win-builder and GitHub Actions CI).</li>
+<li>Improved consistency of header includes (<code>RcppArmadillo.h</code> first) for more robust builds.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="infrastructure-1-0-2">Infrastructure<a class="anchor" aria-label="anchor" href="#infrastructure-1-0-2"></a></h3>
+<ul><li>Added GitHub Actions workflow for Windows CI with latest R and RcppArmadillo.</li>
+<li>Added Windows build status badge to README.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.1" id="cscore-101-2025-06-26">CSCORE 1.0.1 (2025-06-26)<a class="anchor" aria-label="anchor" href="#cscore-101-2025-06-26"></a></h2>
 <div class="section level3">
