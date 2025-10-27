@@ -1,0 +1,6 @@
+## Use RcppArmadillo for C++ compilation
+PKG_CPPFLAGS = $(shell ${R_HOME}/bin/Rscript -e "RcppArmadillo:::CxxFlags()")
+
+## Link against the same LAPACK/BLAS libraries that R was built with
+PKG_LIBS = $(shell ${R_HOME}/bin/Rscript -e "RcppArmadillo:::LdFlags()") \
+            $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
