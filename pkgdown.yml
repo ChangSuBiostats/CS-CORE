@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   covariate_adjustment: covariate_adjustment.html
   CSCORE: CSCORE.html
-last_built: 2025-10-28T00:16Z
+last_built: 2025-10-30T19:57Z
 urls:
   reference: https://changsubiostats.github.io/CS-CORE/reference
   article: https://changsubiostats.github.io/CS-CORE/articles
