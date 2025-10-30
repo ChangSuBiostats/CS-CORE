@@ -52,7 +52,7 @@ CSCORE <- function(object, genes, seq_depth = NULL,
   # Extract the UMI count matrix from the single cell object
   # with RNA as the default assay
   # such that slot `counts` corresponds to UMI counts
-  count_matrix <- t(as.matrix(object[['RNA']]@counts))
+  count_matrix <- t(as.matrix(GetAssayData(object = object, assay = "RNA",slot='counts')))
   # Extract / calculate the sequencing depths
   if(is.null(seq_depth)){
     if('nCount_RNA' %in% colnames(object@meta.data)){
