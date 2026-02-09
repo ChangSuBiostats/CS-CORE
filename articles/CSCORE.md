@@ -1,0 +1,271 @@
+# CS-CORE for cell-type-specific co-expression analysis
+
+This vignette shows an example of applying `CS-CORE` to infer
+cell-type-specific co-expression networks and extracting co-expressed
+gene modules that are enriched for biological functions in cell types.
+
+## 1. Load packages and data
+
+``` r
+library(CSCORE)
+library(Seurat)
+```
+
+In this vignette, we use the single cell RNA-sequencing data on
+Peripheral blood mononuclear cells (PBMC) from COVID patients and
+healthy controls from [Wilk et
+al.](https://www.nature.com/articles/s41591-020-0944-y), which were also
+studied in our
+[paper](https://www.nature.com/articles/s41467-023-40503-7). This data
+set can be downloaded via the following bash script
+
+``` bash
+wget https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_peripheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds
+```
+
+After downloading blish_covid.seu.rds, we load it into the R session
+
+``` r
+pbmc <- readRDS('blish_covid.seu.rds')
+pbmc <- UpdateSeuratObject(pbmc) # update the obsolete Seurat object
+```
+
+## 2. Select cell types and gene sets to study
+
+In this example, we focus on B cells and infer the B cell–specific
+co-expression network. In general, we strongly recommend subsetting to
+the cell type of interest before inferring co-expression. Otherwise, the
+estimates may be affected by [Simpson’s
+paradox](https://pmc.ncbi.nlm.nih.gov/articles/PMC4579334/#:~:text=(A)%20Simpson's%20Paradox%20describes%20),
+capturing associations driven by differences between cell types
+(e.g.correlations between cell type marker genes), rather than gene-gene
+co-expression within a homogeneous cell population.
+
+``` r
+pbmc_B = pbmc[,pbmc$cell.type.coarse %in% 'B']
+```
+
+Depending on the biological question of interest, one may choose to
+study the co-expression network for any gene set. Here, we chose to
+infer the co-expression network for the genes with meaningful expression
+levels in B cells (top 5000 among 26361 genes). There are several
+reasons for our choice:
+
+1.  All genes with moderate to high expression levels provides a
+    comprehensive and unbiased set of genes that could have meaningful
+    biological functions in a cell type.
+
+2.  If the genes have much lower expression levels, it would be
+    statistically more challenging and biologically less interesting to
+    infer their co-expressions, as these genes might have almost all UMI
+    counts equal to 0.
+
+In general, it will be up to the users’s choice to select the gene sets
+to study. We recommend choosing the gene sets that are of interest to
+your application.
+
+``` r
+mean_exp = rowMeans(pbmc_B@assays$RNA@counts/pbmc_B$nCount_RNA)
+genes_selected = names(sort.int(mean_exp, decreasing = T))[1:5000]
+```
+
+## 3. Run `CS-CORE` to infer cell-type-specific co-expression network on the specified gene set
+
+We further subset the B cells to those from healthy control subjects in
+order to study B-cell specific co-expression network among healthy
+control B cells.
+
+``` r
+pbmc_B_healthy <- pbmc_B[, pbmc_B$Status == "Healthy"]
+```
+
+Run `CS-CORE` with the subsetted Seurat object and a gene set of
+interest. We note that CSCORE operates on the raw UMI counts,
+i.e. `object[['RNA']]@counts` for the Seurat object `object`.
+
+``` r
+CSCORE_result <- CSCORE(pbmc_B_healthy, genes = genes_selected)
+# faster yet more memory intensive:
+# CSCORE_result <- CSCORE(pbmc_B_healthy, genes = genes_selected, IRLS_version = 'bash_R')
+```
+
+Since version 1.0.1 (updated June 2025), CSCORE provides a new Rcpp
+implementation of moment-based regressions that offers improved memory
+efficiency and supports covariate adjustment (see [Covariate
+adjustment](https://changsubiostats.github.io/CS-CORE/articles/covariate_adjustment.md)).
+The original implementation at the time of publication (version 0.0.0.9)
+was written in base R, and while it is approximately 10 times faster, it
+is also significantly more memory intensive (by a factor of 10–100). We
+recommend choosing between the two implementations based on available
+memory resources and the need for computational speed and covariate
+adjustment.
+
+## 4. Downstream analysis on the co-expression network
+
+### 4.1 Extract co-expressed gene module
+
+Given the `CS-CORE` \\p\\-values, we first set co-expressions that are
+not statistically significant (Benjamini & Hochberg-adjusted
+\\p\\-values \\\>0.05\\) to 0.
+
+``` r
+# Obtain CS-CORE co-expression estimates
+CSCORE_coexp <- CSCORE_result$est
+
+# Obtain BH-adjusted p values
+CSCORE_p <- CSCORE_result$p_value
+p_matrix_BH = matrix(0, length(genes_selected), length(genes_selected))
+p_matrix_BH[upper.tri(p_matrix_BH)] = p.adjust(CSCORE_p[upper.tri(CSCORE_p)], method = "BH")
+p_matrix_BH <- p_matrix_BH + t(p_matrix_BH)
+
+# Set co-expression entires with BH-adjusted p-values greater than 0.05 to 0
+CSCORE_coexp[p_matrix_BH > 0.05] <- 0
+```
+
+Next, based on the thresholded co-expression matrix, we apply
+[WGCNA](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559)
+to extract co-expressed gene modules. In particular, we use `CS-CORE`
+estimates to measure co-expressions for single cell RNA-sequencing data,
+which replace the Pearson correlations used in traditional WGNCA
+workflow, that suffer from inflated false positives and attenuation bias
+on single cell data as demonstrated in our
+[manuscript](https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1).
+
+``` r
+if (!require(WGCNA)) {
+  install.packages("WGCNA")
+  library(WGCNA)
+}else{
+  library(WGCNA)
+}
+```
+
+``` r
+# Compute the adjacency matrix based on the co-expression matrix
+adj = WGCNA::adjacency.fromSimilarity(abs(CSCORE_coexp), power = 1)
+# Compute the topological overlap matrix
+TOM = WGCNA::TOMsimilarity(adj)
+dissTOM = 1-TOM
+rownames(dissTOM) <- colnames(dissTOM) <- genes_selected
+# Run hierarchical clustering as in the WGCNA workflow
+hclust_dist = hclust(as.dist(dissTOM), method = "average") 
+memb = dynamicTreeCut::cutreeDynamic(dendro = hclust_dist, 
+                     distM = dissTOM, 
+                     deepSplit = 2,
+                     pamRespectsDendro = FALSE,
+                     minClusterSize = 10)
+# For more instructions on how to tune the parameters in the WGCNA workflow,
+# please refer to https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/Tutorials/
+
+names(memb) = genes_selected
+memb_tab <- table(memb)
+module_list = lapply(sort(unique(memb)), function(i_k) names(which(memb == i_k)))
+```
+
+One can also apply other clustering methods to extract co-expressed gene
+modules.
+
+### 4.2 Functional enrichment analysis
+
+Gene Ontology (GO) enrichment analysis is one of the common downstream
+functional enrichment analyses for interpreting the biological pathways
+implied by co-expressed gene modules. Here, we showcase the GO pathways
+enriched in `CS-CORE` co-expressed gene modules using the R
+implementation from [Wu et
+al.](https://pubmed.ncbi.nlm.nih.gov/34557778/).
+
+``` r
+if (!require(clusterProfiler)) {
+  BiocManager::install("clusterProfiler")
+  library(clusterProfiler)
+}else{
+  library(clusterProfiler)
+}
+```
+
+``` r
+# Set all genes in clustering analysis as background,
+# such that the enrichment result of any module is not attributed to its high expression levels.
+universe <- genes_selected
+
+# Filter GO terms based on BH-adjusted p values < 0.05
+####
+## Note: the following codes can take a long time to run as 
+## in this example there are more than 100 co-expressed gene modules from WGCNA
+####
+ego_result <- lapply(1:length(module_list), function(i){
+  enrichGO(gene = module_list[[i]],
+         OrgDb = 'org.Hs.eg.db', # human
+         keyType = "SYMBOL",
+         ont = "ALL",
+         pAdjustMethod = "BH",
+         universe = universe,
+         pvalueCutoff = 0.05)
+})
+```
+
+There are in total 144 gene modules inferred by WGCNA. For illustrative
+purposes, we focus on the modules with the strongest enrichment signals
+(with at least one GO term having adjusted \\p\\-value smaller than
+\\10^{-3}\\ and with at least 10 enriched GO terms) and print the top 3
+GO terms.
+
+``` r
+top_enrich_clusters <- which(sapply(ego_result, function(x) 
+  (x@result$p.adjust[1] < 0.001) & (dim(x)[1]>10)))
+top_enrich_go <- lapply(top_enrich_clusters, function(i) ego_result[[i]]@result[1:3,])
+```
+
+``` r
+for(i in 1:length(top_enrich_go)){
+  print(top_enrich_go[[i]][, c('Description', 'GeneRatio', 'p.adjust')])
+  cat('\n')
+}
+#>                             Description GeneRatio     p.adjust
+#> GO:0002181      cytoplasmic translation    83/232 1.289669e-80
+#> GO:0006412                  translation    94/232 3.123690e-43
+#> GO:0043043 peptide biosynthetic process    94/232 3.123690e-43
+#> 
+#>                                Description GeneRatio     p.adjust
+#> GO:0030029    actin filament-based process    21/107 0.0002847674
+#> GO:0030036 actin cytoskeleton organization    20/107 0.0002847674
+#> GO:0007015     actin filament organization    16/107 0.0004358998
+#> 
+#>                                                                                  Description
+#> GO:0019886 antigen processing and presentation of exogenous peptide antigen via MHC class II
+#> GO:0002495           antigen processing and presentation of peptide antigen via MHC class II
+#> GO:0002399                                             MHC class II protein complex assembly
+#>            GeneRatio     p.adjust
+#> GO:0019886    14/109 7.766970e-16
+#> GO:0002495    14/109 1.036171e-15
+#> GO:0002399    12/109 1.036171e-15
+#> 
+#>                          Description GeneRatio     p.adjust
+#> GO:0002250  adaptive immune response     13/37 4.972114e-05
+#> GO:0006910 phagocytosis, recognition      6/37 4.114611e-04
+#> GO:0042113         B cell activation     10/37 4.114611e-04
+#> 
+#>                             Description GeneRatio     p.adjust
+#> GO:0035455 response to interferon-alpha      4/25 0.0001664956
+#> GO:0009615            response to virus      8/25 0.0004724418
+#> GO:0051607    defense response to virus      7/25 0.0004724418
+```
+
+At this point, we have reproduced the results in our
+[manuscript](https://doi.org/10.1038/s41467-023-40503-7), Table S6.
+
+This concludes our vignette of using `CS-CORE` to infer
+cell-type-specific co-expression networks and a typical pipeline for
+extracting co-expressed gene modules and performing functional
+enrichment analysis.
+
+One can also perform a differential co-expression analysis based on the
+codes provided here. For example, the inferred network of healthy B
+cells can be constrasted to the network inferred with B cells from the
+COVID-19 patients to study dysregulation in B cells’ co-expression due
+to COVID-19 infection. For more details please refer the the methods in
+our [manuscript](https://doi.org/10.1038/s41467-023-40503-7).
+
+**Stay tuned!** We are also working on a pipeline for cell-type-specific
+module-trait association analyses with single cell RNA-seq data based on
+`CS-CORE` developed here.
