@@ -8,3 +8,5 @@
 ^pkgdown$
 ^doc$
 ^Meta$
+^vignettes/differential_coexpression\.Rmd\.orig$
+^scripts$

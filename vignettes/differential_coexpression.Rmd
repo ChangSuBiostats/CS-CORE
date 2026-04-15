@@ -1,0 +1,298 @@
+---
+title: "Differential co-expression with CS-CORE"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Differential co-expression with CS-CORE}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Beyond asking which genes are differentially expressed, a complementary question is: do the *relationships* between genes change across conditions? Two genes may maintain similar expression levels while their coordination is substantially rewired, and such changes can reflect altered regulatory programs that standard differential expression analysis would miss. Differential co-expression analysis provides a network-based approach to study the impact of disease/treatment in cell types.
+
+This vignette demonstrates how to use CS-CORE to identify gene modules whose co-expression change between COVID-19 patients and healthy controls in CD14 Monocytes, illustrating the methodology used to produce Figure 6 of the CS-CORE [paper](https://doi.org/10.1038/s41467-023-40503-7). Using the same dataset as in [Getting started](CSCORE.html), we focus on the top 1000 highly expressed genes and work through the following steps:
+
+1. **Load data**: specify the cell type and gene set of interest.
+
+2. **Run differential co-expression analysis with `diff_CSCORE()`**: estimate co-expression for both groups and obtain the observed difference. We then implement a permutation test that randomly permutes the sample labels to build a null distribution of differences in co-expression estimates, from which $p$-values for the observed differences are derived.
+
+3. **Extract differentially co-expressed gene modules**: apply [WGCNA](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559) to the significantly differentially co-expressed pairs (BH-adjusted $p$-values $< 0.05$) to extract gene modules that share similar co-expression changes between groups.
+
+4. **Perform GO enrichment analysis**: perform GO enrichment analysis on the differentially co-expressed modules to identify dysregulated biological pathways.
+
+5. **Visualize the differentially co-expressed gene modules**: for selected modules of interest, visualize the enriched GO pathways and compare co-expression networks between groups with heatmaps.
+
+
+# 1. Load packages and data
+
+```{r message=F}
+library(CSCORE)
+library(Seurat)
+```
+
+```{r message=F, warning=F, eval = FALSE}
+# wget https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_peripheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds
+
+pbmc <- readRDS('blish_covid.seu.rds')
+pbmc <- UpdateSeuratObject(pbmc) # update the obsolete Seurat object
+pbmc_CD14 <- pbmc[, pbmc$cell.type.coarse %in% 'CD14 Monocyte']
+mean_exp <- rowMeans(pbmc_CD14@assays$RNA@counts / pbmc_CD14$nCount_RNA)
+genes_selected <- names(sort.int(mean_exp, decreasing = TRUE))[1:1000]
+```
+
+Instead of subsetting to cells from healthy subjects, here we are interested in the difference in co-expression between CD14 Monocytes from healthy subjects and from COVID-19 patients.
+
+```{r eval = FALSE}
+# obtain the disease label for each donor (sample)
+Status_id_tab <- table(pbmc_CD14$Donor, pbmc_CD14$Status)
+Status_id_tab
+```
+
+```
+#>     COVID Healthy
+#>  C1  3419       0
+#>  C2   217       0
+#>  C3  1102       0
+#>  C4   713       0
+#>  C5   462       0
+#>  C6   277       0
+#>  C7  2095       0
+#>  H1     0     680
+#>  H2     0     325
+#>  H3     0     215
+#>  H4     0     166
+#>  H5     0     444
+#>  H6     0     224
+```
+
+There are 8285 CD14 Monocytes from 7 COVID-19 patients and 2054 CD14 Monocytes from 6 healthy controls.
+
+
+# 2. Run differential co-expression analysis with CS-CORE
+
+We run `diff_CSCORE()` to estimate co-expression in each group and perform a permutation test. Permutations are done at the biological sample (donor) level to preserve within-sample cell correlations, following the procedure described in the [paper](https://doi.org/10.1038/s41467-023-40503-7). By default, we run 100 permutations, and you can further increase it for p-values with higher resolution.
+
+```{r eval = FALSE}
+diff_result <- diff_CSCORE(pbmc_CD14,
+                           group_label  = 'Status',
+                           sample_label = 'Donor',
+                           genes        = genes_selected,
+                           group_levels = c('Healthy', 'COVID'),
+                           n_permu      = 100,
+                           seed         = 2024,
+                           n_cores      = 1)  # increase on a multi-core machine
+```
+
+```
+#>   |========================================| 100%
+```
+
+- Note: This step can be time consuming. Each permutation run  takes ~20 seconds on a single core (Intel Xeon Gold 6226R, 2.90 GHz), so 100 permutations takes ~33 minutes on a singlecore. We recommend using multiple cores via n_cores to speed up the analysis. 
+
+
+```{r eval = FALSE}
+obs_diff <- diff_result$obs_diff
+permu_pval <- diff_result$p_value
+
+# BH-adjusted p-values
+p_matrix_BH <- matrix(0, length(genes_selected), length(genes_selected))
+p_matrix_BH[upper.tri(p_matrix_BH)] <- p.adjust(
+  permu_pval[upper.tri(permu_pval)], method = "BH")
+p_matrix_BH <- p_matrix_BH + t(p_matrix_BH)
+
+# Set non-significant differences to 0
+obs_diff_thresholded <- obs_diff
+obs_diff_thresholded[p_matrix_BH > 0.05] <- 0
+```
+
+# 3. Extract differentially co-expressed gene modules
+
+We apply WGCNA to the thresholded differential co-expression matrix, using the soft-thresholding power set to 1, as described in the [paper](https://doi.org/10.1038/s41467-023-40503-7).
+
+```{r eval = FALSE}
+if (!require(WGCNA)) {
+  install.packages("WGCNA")
+  library(WGCNA)
+} else {
+  library(WGCNA)
+}
+```
+
+```{r eval = FALSE}
+# Compute the adjacency matrix based on the differential co-expression matrix
+adj <- WGCNA::adjacency.fromSimilarity(abs(obs_diff_thresholded) / 2, power = 1)
+# Compute the topological overlap matrix
+TOM <- WGCNA::TOMsimilarity(adj)
+dissTOM <- 1 - TOM
+rownames(dissTOM) <- colnames(dissTOM) <- genes_selected
+# Run hierarchical clustering as in the WGCNA workflow
+hclust_dist <- hclust(as.dist(dissTOM), method = "average")
+memb <- dynamicTreeCut::cutreeDynamic(dendro = hclust_dist,
+                                      distM = dissTOM,
+                                      deepSplit = 2,
+                                      pamRespectsDendro = FALSE,
+                                      minClusterSize = 10)
+# For more instructions on tuning WGCNA parameters, see
+# https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/Tutorials/
+
+names(memb) <- genes_selected
+memb_tab <- table(memb)
+module_list <- lapply(sort(unique(memb)), function(i_k) names(which(memb == i_k)))
+```
+
+# 4. Perform GO enrichment analysis
+
+We perform GO enrichment analysis on each differentially co-expressed module, using the same approach as in [Getting started](CSCORE.html).
+
+```{r eval = FALSE}
+if (!require(clusterProfiler)) {
+  BiocManager::install("clusterProfiler")
+  library(clusterProfiler)
+} else {
+  library(clusterProfiler)
+}
+```
+
+```{r eval = FALSE}
+# Set all genes in the clustering analysis as background
+universe <- genes_selected
+
+ego_result <- lapply(1:length(module_list), function(i) {
+  enrichGO(gene          = module_list[[i]],
+           OrgDb         = 'org.Hs.eg.db', # human
+           keyType       = "SYMBOL",
+           ont           = "ALL",
+           pAdjustMethod = "BH",
+           universe      = universe,
+           pvalueCutoff  = 0.05)
+})
+```
+
+```{r echo = FALSE}
+# Pre-computed results cached as package data for rendering efficiency;
+# use the eval=FALSE chunks above to reproduce from scratch.
+data(diff_ego_result,  package = "CSCORE")
+data(diff_module_list, package = "CSCORE")
+ego_result  <- diff_ego_result
+module_list <- diff_module_list
+```
+
+We focus on modules with the strongest enrichment signals (at least one GO term with BH-adjusted $p$-value $< 10^{-3}$ and at least 10 enriched GO terms) and print the top 3 GO terms per module.
+
+```{r eval = FALSE}
+top_enrich_clusters_diff <- which(sapply(ego_result, function(x)
+  (x@result$p.adjust[1] < 0.001) & (dim(x)[1] > 10)))
+top_enrich_go_diff <- lapply(top_enrich_clusters_diff, function(i) ego_result[[i]]@result[1:3, ])
+```
+
+```{r echo = FALSE}
+top_enrich_clusters_diff <- which(sapply(ego_result, function(x)
+  (x@result$p.adjust[1] < 0.001) & (dim(x)[1] > 10)))
+top_enrich_go_diff <- lapply(top_enrich_clusters_diff, function(i) ego_result[[i]]@result[1:3, ])
+```
+
+```{r}
+for (i in 1:length(top_enrich_go_diff)) {
+  print(top_enrich_go_diff[[i]][, c('Description', 'GeneRatio', 'p.adjust')])
+  cat('\n')
+}
+```
+
+For selected modules with significant differential signals, we further visualize the enriched pathways and the difference in co-expression between groups.
+
+```{r message = FALSE}
+for (pkg in c("enrichplot", "pheatmap", "RColorBrewer", "gridExtra")) {
+  if (!require(pkg, character.only = TRUE)) {
+    if (pkg == "enrichplot") BiocManager::install(pkg) else install.packages(pkg)
+    library(pkg, character.only = TRUE)
+  }
+}
+```
+
+# 5. Visualize the differentially co-expressed gene modules
+
+As an example, we choose a module enriched for defense response to virus to illustrate the visualization of GO pathways and of co-expression networks in Healthy versus COVID patients.
+
+```{r fig.width=6, fig.height=5}
+# gene set of interest
+gene_set <- module_list[[4]]
+
+# visualize top 10 enriched GO terms
+dotplot(ego_result[[4]])
+```
+
+```{r eval = FALSE}
+# organize the co-expression estimates for the gene set of interest
+# the labels are given by group_levels used in diff_CSCORE()
+group_levels <- c('Healthy', 'COVID')
+diff_est_example <- list(
+  Healthy = diff_result$est_group1[gene_set, gene_set],
+  COVID   = diff_result$est_group2[gene_set, gene_set]
+)
+```
+
+```{r echo=FALSE}
+group_levels <- c('Healthy', 'COVID')
+```
+
+
+```{r fig.width=10, fig.height=5}
+col_palette <- colorRampPalette(rev(brewer.pal(n = 7, name = "RdYlBu")))(100)
+breaks <- seq(-1, 1, length.out = 101)
+p_list <- list()
+for (i in 1:2) {
+  p_list[[i]] <- pheatmap(diff_est_example[[group_levels[i]]],
+                          border_color = NA,
+                          color = col_palette, breaks = breaks,
+                          cluster_rows = if (i == 1) TRUE else p_list[[1]]$tree_row,
+                          cluster_cols = if (i == 1) TRUE else p_list[[1]]$tree_col,
+                          show_colnames = F, show_rownames = ifelse(i == 2, T, F),
+                          treeheight_col = 0, treeheight_row = ifelse(i == 1, 50, 0),
+                          cellwidth = 6, cellheight = 6,
+                          fontsize_row = 5, legend = ifelse(i == 1, F, T),
+                          main = group_levels[i],
+                          silent = T, fontsize = 12,
+                          width = 4.5, height = 4)
+}
+grid.arrange(p_list[[1]][[4]], p_list[[2]][[4]], nrow = 1)
+```
+
+The genes in this module further divide into two subgroups with distinct biological functions: defense response to virus versus ribosomal protein (RPL) and mitochondrial (MT) genes. We can highlight this with an annotation.
+
+
+```{r fig.width=13, fig.height=5}
+annot_df <- data.frame(cutree(p_list[[2]]$tree_row, 2))
+colnames(annot_df) <- 'group'
+annot_df$group <- factor(annot_df[[1]],
+                         labels = c('defense response to virus', 'MT and RPL genes'),
+                         levels = c(1, 2))
+p_list <- list()
+for (i in 1:2) {
+  p_list[[i]] <- pheatmap(diff_est_example[[group_levels[i]]],
+                          border_color = NA,
+                          color = col_palette, breaks = breaks,
+                          cluster_rows = if (i == 1) TRUE else p_list[[1]]$tree_row,
+                          cluster_cols = if (i == 1) TRUE else p_list[[1]]$tree_col,
+                          show_colnames = F, show_rownames = ifelse(i == 2, T, F),
+                          treeheight_col = 0, treeheight_row = ifelse(i == 1, 50, 0),
+                          cellwidth = 6, cellheight = 6,
+                          fontsize_row = 5, legend = ifelse(i == 1, F, T),
+                          main = group_levels[i],
+                          silent = T, fontsize = 12,
+                          width = 4.5, height = 4,
+                          annotation_col = annot_df,
+                          annotation_legend = ifelse(i == 1, F, T))
+}
+grid.arrange(p_list[[1]][[4]], p_list[[2]][[4]], nrow = 1)
+```
+
+The GO enrichment results and co-expression heatmaps above are generated using the same methodology as Figure 6 of our [manuscript](https://doi.org/10.1038/s41467-023-40503-7). In the paper, four differentially co-expressed modules in CD14 Monocytes were enriched for immune response pathways, including virus defense response, which we demonstrate above. The code above also serves as a general template for studying and visualizing differential co-expression results. 
+
+- Note: Due to differences in software versions, the exact module composition and GO     
+  terms may vary slightly across runs, but the key biological signals should be consistently recovered.

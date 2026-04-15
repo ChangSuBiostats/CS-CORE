@@ -8,6 +8,8 @@ articles:
   contents: CSCORE
 - title: Covariate Adjustment
   contents: covariate_adjustment
+- title: Differential Co-expression
+  contents: differential_coexpression
 navbar:
   structure:
     left:
@@ -25,6 +27,8 @@ navbar:
         href: articles/CSCORE.html
       - text: Covariates adjustment
         href: articles/covariate_adjustment.html
+      - text: Differential co-expression
+        href: articles/differential_coexpression.html
 home:
   sidebar:
     structure:
@@ -42,6 +46,7 @@ reference:
     Functions for inferring cell-type-specific co-expression networks
   contents:
   - CSCORE
+  - diff_CSCORE
   - CSCORE_IRLS_cpp
   - CSCORE_IRLS_base
   - post_process_est
@@ -53,4 +58,7 @@ reference:
   contents:
   - ind_gene_pair
   - top_enrich_go
+  - diff_module_list
+  - diff_ego_result
+  - diff_est_example
 

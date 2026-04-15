@@ -21,3 +21,41 @@
 #'
 "top_enrich_go"
 
+#' Gene modules from the differential co-expression vignette
+#'
+#' WGCNA module assignments from the differential co-expression analysis of
+#' CD14 Monocytes (COVID-19 vs. healthy controls) in the CS-CORE vignette.
+#' Saved for rendering the vignette without re-running the full analysis.
+#'
+#' @format ## `diff_module_list`
+#' A list of character vectors, one per module, each containing the gene names assigned to that module.
+#'
+"diff_module_list"
+
+#' GO enrichment results from the differential co-expression vignette
+#'
+#' GO enrichment results (from \code{clusterProfiler::enrichGO}) for all WGCNA modules
+#' identified in the differential co-expression analysis of CD14 Monocytes
+#' (COVID-19 vs. healthy controls).
+#' Saved for rendering the vignette without re-running the full analysis.
+#'
+#' @format ## `diff_ego_result`
+#' A list of \code{enrichResult} objects, one per module.
+#'
+"diff_ego_result"
+
+#' Co-expression matrices for the example module in the differential co-expression vignette
+#'
+#' Subsetted co-expression matrices (healthy and COVID-19) for the example gene module
+#' (enriched for defense response to virus) from the CS-CORE differential co-expression vignette.
+#' Saved for rendering the vignette without re-running the full analysis.
+#'
+#' @format ## `diff_est_example`
+#' A named list with two elements:
+#' \describe{
+#'   \item{Healthy}{Co-expression matrix for the example module in healthy controls.}
+#'   \item{COVID}{Co-expression matrix for the example module in COVID-19 patients.}
+#' }
+#'
+"diff_est_example"
+
