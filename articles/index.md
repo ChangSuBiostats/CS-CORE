@@ -9,3 +9,8 @@
 
 - [Covariate
   adjustment](https://changsubiostats.github.io/CS-CORE/articles/covariate_adjustment.md):
+
+### Differential Co-expression
+
+- [Differential co-expression with
+  CS-CORE](https://changsubiostats.github.io/CS-CORE/articles/differential_coexpression.md):

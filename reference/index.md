@@ -6,6 +6,8 @@ Functions for inferring cell-type-specific co-expression networks
 
 - [`CSCORE()`](https://changsubiostats.github.io/CS-CORE/reference/CSCORE.md)
   : CS-CORE for cell-type-specific co-expression network inference
+- [`diff_CSCORE()`](https://changsubiostats.github.io/CS-CORE/reference/diff_CSCORE.md)
+  : Differential co-expression analysis with CS-CORE
 - [`CSCORE_IRLS_cpp()`](https://changsubiostats.github.io/CS-CORE/reference/CSCORE_IRLS_cpp.md)
   : Iteratively reweighted least squares (IRLS) procedure in CS-CORE
   (Rcpp)
@@ -27,3 +29,10 @@ Data sets for illustrative purposes
   : A simulated independent gene pair
 - [`top_enrich_go`](https://changsubiostats.github.io/CS-CORE/reference/top_enrich_go.md)
   : Top GO enrichment result in the CS-CORE vignette
+- [`diff_module_list`](https://changsubiostats.github.io/CS-CORE/reference/diff_module_list.md)
+  : Gene modules from the differential co-expression vignette
+- [`diff_ego_result`](https://changsubiostats.github.io/CS-CORE/reference/diff_ego_result.md)
+  : GO enrichment results from the differential co-expression vignette
+- [`diff_est_example`](https://changsubiostats.github.io/CS-CORE/reference/diff_est_example.md)
+  : Co-expression matrices for the example module in the differential
+  co-expression vignette

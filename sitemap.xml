@@ -4,6 +4,7 @@
 <url><loc>https://changsubiostats.github.io/CS-CORE/LICENSE.html</loc></url>
 <url><loc>https://changsubiostats.github.io/CS-CORE/articles/CSCORE.html</loc></url>
 <url><loc>https://changsubiostats.github.io/CS-CORE/articles/covariate_adjustment.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/articles/differential_coexpression.html</loc></url>
 <url><loc>https://changsubiostats.github.io/CS-CORE/articles/index.html</loc></url>
 <url><loc>https://changsubiostats.github.io/CS-CORE/authors.html</loc></url>
 <url><loc>https://changsubiostats.github.io/CS-CORE/index.html</loc></url>
@@ -14,6 +15,10 @@
 <url><loc>https://changsubiostats.github.io/CS-CORE/reference/CSCORE_IRLS_cpp.html</loc></url>
 <url><loc>https://changsubiostats.github.io/CS-CORE/reference/WLS_cov.html</loc></url>
 <url><loc>https://changsubiostats.github.io/CS-CORE/reference/WLS_mean.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/diff_CSCORE.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/diff_ego_result.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/diff_est_example.html</loc></url>
+<url><loc>https://changsubiostats.github.io/CS-CORE/reference/diff_module_list.html</loc></url>
 <url><loc>https://changsubiostats.github.io/CS-CORE/reference/has_non_integer.html</loc></url>
 <url><loc>https://changsubiostats.github.io/CS-CORE/reference/ind_gene_pair.html</loc></url>
 <url><loc>https://changsubiostats.github.io/CS-CORE/reference/index.html</loc></url>
