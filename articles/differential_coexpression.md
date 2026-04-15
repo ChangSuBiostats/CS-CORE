@@ -259,6 +259,8 @@ for (i in 1:length(top_enrich_go_diff)) {
 #> GO:0002504      6/19 4.134678e-06
 ```
 
+## 5. Visualize the differentially co-expressed gene modules
+
 For selected modules with significant differential signals, we further
 visualize the enriched pathways and the difference in co-expression
 between groups.
@@ -271,8 +273,6 @@ for (pkg in c("enrichplot", "pheatmap", "RColorBrewer", "gridExtra")) {
   }
 }
 ```
-
-## 5. Visualize the differentially co-expressed gene modules
 
 As an example, we choose a module enriched for defense response to virus
 to illustrate the visualization of GO pathways and of co-expression
@@ -357,10 +357,11 @@ grid.arrange(p_list[[1]][[4]], p_list[[2]][[4]], nrow = 1)
 The GO enrichment results and co-expression heatmaps above are generated
 using the same methodology as Figure 6 of our
 [manuscript](https://doi.org/10.1038/s41467-023-40503-7). In the paper,
-four differentially co-expressed modules in CD14 Monocytes were enriched
-for immune response pathways, including virus defense response, which we
-demonstrate above. The code above also serves as a general template for
-studying and visualizing differential co-expression results.
+differentially co-expressed modules in CD14 Monocytes were enriched for
+multiple immune response pathways, including virus defense response,
+which we demonstrate above. The code here also serves as a general
+template for studying and visualizing differential co-expression
+results.
 
 - Note: Due to differences in software versions, the exact module
   composition and GO  

@@ -265,7 +265,3 @@ cells can be constrasted to the network inferred with B cells from the
 COVID-19 patients to study dysregulation in B cells’ co-expression due
 to COVID-19 infection. For more details please refer the the methods in
 our [manuscript](https://doi.org/10.1038/s41467-023-40503-7).
-
-**Stay tuned!** We are also working on a pipeline for cell-type-specific
-module-trait association analyses with single cell RNA-seq data based on
-`CS-CORE` developed here.

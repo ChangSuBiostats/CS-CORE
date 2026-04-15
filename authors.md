@@ -13,12 +13,12 @@
 
 Su C, Xu Z, Shan X (2026). *CSCORE: Cell-type-specific co-expression
 inference from single cell RNA-sequencing data*. R package version
-1.0.2, <https://changsubiostats.github.io/CS-CORE/>.
+1.1.0, <https://changsubiostats.github.io/CS-CORE/>.
 
     @Manual{,
       title = {CSCORE: Cell-type-specific co-expression inference from single cell RNA-sequencing data},
       author = {Chang Su and Zichun Xu and Xinning Shan},
       year = {2026},
-      note = {R package version 1.0.2},
+      note = {R package version 1.1.0},
       url = {https://changsubiostats.github.io/CS-CORE/},
     }

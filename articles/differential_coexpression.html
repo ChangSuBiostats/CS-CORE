@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CSCORE</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -298,6 +298,10 @@ GO terms per module.</p>
 <span><span class="co">#&gt; GO:0019886      6/19 4.134678e-06</span></span>
 <span><span class="co">#&gt; GO:0002495      6/19 4.134678e-06</span></span>
 <span><span class="co">#&gt; GO:0002504      6/19 4.134678e-06</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="visualize-the-differentially-co-expressed-gene-modules">5. Visualize the differentially co-expressed gene modules<a class="anchor" aria-label="anchor" href="#visualize-the-differentially-co-expressed-gene-modules"></a>
+</h2>
 <p>For selected modules with significant differential signals, we
 further visualize the enriched pathways and the difference in
 co-expression between groups.</p>
@@ -308,10 +312,6 @@ co-expression between groups.</p>
 <span>    <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">pkg</span>, character.only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="visualize-the-differentially-co-expressed-gene-modules">5. Visualize the differentially co-expressed gene modules<a class="anchor" aria-label="anchor" href="#visualize-the-differentially-co-expressed-gene-modules"></a>
-</h2>
 <p>As an example, we choose a module enriched for defense response to
 virus to illustrate the visualization of GO pathways and of
 co-expression networks in Healthy versus COVID patients.</p>
@@ -349,7 +349,7 @@ co-expression networks in Healthy versus COVID patients.</p>
 <span>                          width <span class="op">=</span> <span class="fl">4.5</span>, height <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu">grid.arrange</span><span class="op">(</span><span class="va">p_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span>, <span class="va">p_list</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="differential_coexpression_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="960"></p>
+<p><img src="differential_coexpression_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="864"></p>
 <p>The genes in this module further divide into two subgroups with
 distinct biological functions: defense response to virus versus
 ribosomal protein (RPL) and mitochondrial (MT) genes. We can highlight
@@ -378,13 +378,13 @@ this with an annotation.</p>
 <span>                          annotation_legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">i</span> <span class="op">==</span> <span class="fl">1</span>, <span class="cn">F</span>, <span class="cn">T</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu">grid.arrange</span><span class="op">(</span><span class="va">p_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span>, <span class="va">p_list</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="differential_coexpression_files/figure-html/unnamed-chunk-20-1.png" class="r-plt" alt="" width="1248"></p>
+<p><img src="differential_coexpression_files/figure-html/unnamed-chunk-20-1.png" class="r-plt" alt="" width="1296"></p>
 <p>The GO enrichment results and co-expression heatmaps above are
 generated using the same methodology as Figure 6 of our <a href="https://doi.org/10.1038/s41467-023-40503-7" class="external-link">manuscript</a>. In the
-paper, four differentially co-expressed modules in CD14 Monocytes were
-enriched for immune response pathways, including virus defense response,
-which we demonstrate above. The code above also serves as a general
-template for studying and visualizing differential co-expression
+paper, differentially co-expressed modules in CD14 Monocytes were
+enriched for multiple immune response pathways, including virus defense
+response, which we demonstrate above. The code here also serves as a
+general template for studying and visualizing differential co-expression
 results.</p>
 <ul>
 <li>Note: Due to differences in software versions, the exact module

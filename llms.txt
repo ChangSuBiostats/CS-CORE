@@ -38,6 +38,11 @@ install_github("ChangSuBiostats/CS-CORE")
     shows how to adjust for covariates in co-expression inference with
     CS-CORE.
 
+3.  [Differential co-expression
+    analysis](https://changsubiostats.github.io/CS-CORE/articles/differential_coexpression.html)
+    shows how to identify dysregulated gene co-expression between
+    conditions using CS-CORE.
+
 ## Contact us
 
 For issues or feature requests, please visit GitHub Issues. If an issue
