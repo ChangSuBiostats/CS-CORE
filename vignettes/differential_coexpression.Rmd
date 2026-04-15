@@ -204,6 +204,9 @@ for (i in 1:length(top_enrich_go_diff)) {
 }
 ```
 
+
+# 5. Visualize the differentially co-expressed gene modules
+
 For selected modules with significant differential signals, we further visualize the enriched pathways and the difference in co-expression between groups.
 
 ```{r message = FALSE}
@@ -214,8 +217,6 @@ for (pkg in c("enrichplot", "pheatmap", "RColorBrewer", "gridExtra")) {
   }
 }
 ```
-
-# 5. Visualize the differentially co-expressed gene modules
 
 As an example, we choose a module enriched for defense response to virus to illustrate the visualization of GO pathways and of co-expression networks in Healthy versus COVID patients.
 
@@ -242,7 +243,7 @@ group_levels <- c('Healthy', 'COVID')
 ```
 
 
-```{r fig.width=10, fig.height=5}
+```{r fig.width=9, fig.height=5}
 col_palette <- colorRampPalette(rev(brewer.pal(n = 7, name = "RdYlBu")))(100)
 breaks <- seq(-1, 1, length.out = 101)
 p_list <- list()
@@ -266,7 +267,7 @@ grid.arrange(p_list[[1]][[4]], p_list[[2]][[4]], nrow = 1)
 The genes in this module further divide into two subgroups with distinct biological functions: defense response to virus versus ribosomal protein (RPL) and mitochondrial (MT) genes. We can highlight this with an annotation.
 
 
-```{r fig.width=13, fig.height=5}
+```{r fig.width=13.5, fig.height=5}
 annot_df <- data.frame(cutree(p_list[[2]]$tree_row, 2))
 colnames(annot_df) <- 'group'
 annot_df$group <- factor(annot_df[[1]],
@@ -292,7 +293,7 @@ for (i in 1:2) {
 grid.arrange(p_list[[1]][[4]], p_list[[2]][[4]], nrow = 1)
 ```
 
-The GO enrichment results and co-expression heatmaps above are generated using the same methodology as Figure 6 of our [manuscript](https://doi.org/10.1038/s41467-023-40503-7). In the paper, four differentially co-expressed modules in CD14 Monocytes were enriched for immune response pathways, including virus defense response, which we demonstrate above. The code above also serves as a general template for studying and visualizing differential co-expression results. 
+The GO enrichment results and co-expression heatmaps above are generated using the same methodology as Figure 6 of our [manuscript](https://doi.org/10.1038/s41467-023-40503-7). In the paper, differentially co-expressed modules in CD14 Monocytes were enriched for multiple immune response pathways, including virus defense response, which we demonstrate above. The code here also serves as a general template for studying and visualizing differential co-expression results. 
 
 - Note: Due to differences in software versions, the exact module composition and GO     
   terms may vary slightly across runs, but the key biological signals should be consistently recovered.

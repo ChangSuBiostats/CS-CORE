@@ -27,6 +27,8 @@ It includes inferring co-expressions, extracting co-expressed gene modules and f
 2. [Covariate adjustment](https://changsubiostats.github.io/CS-CORE/articles/covariate_adjustment.html) shows how to adjust for 
 covariates in co-expression inference with CS-CORE.
 
+3. [Differential co-expression analysis](https://changsubiostats.github.io/CS-CORE/articles/differential_coexpression.html) 
+shows how to identify dysregulated gene co-expression between conditions using CS-CORE.
 
 ## Contact us 
 
