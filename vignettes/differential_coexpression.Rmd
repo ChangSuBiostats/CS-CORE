@@ -93,7 +93,7 @@ diff_result <- diff_CSCORE(pbmc_CD14,
 #>   |========================================| 100%
 ```
 
-- Note: This step can be time consuming. Each permutation run  takes ~20 seconds on a single core (Intel Xeon Gold 6226R, 2.90 GHz), so 100 permutations takes ~33 minutes on a singlecore. We recommend using multiple cores via n_cores to speed up the analysis. 
+- Note: This step can be time consuming. Each permutation run takes ~20 seconds on a single core (Intel Xeon Gold 6226R, 2.90 GHz), so 100 permutations takes ~33 minutes on a singlecore. We recommend using multiple cores via n_cores to speed up the analysis. 
 
 
 ```{r eval = FALSE}

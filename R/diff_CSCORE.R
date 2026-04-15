@@ -30,6 +30,7 @@
 #'   underlying \code{CSCORE} calls and prints only a progress bar for the permutation
 #'   loop. If \code{TRUE}, prints detailed \code{[INFO]} messages from each step.
 #' @param ... Additional arguments passed to \code{\link{CSCORE}}.
+#' @importFrom utils combn txtProgressBar setTxtProgressBar
 #'
 #' @return A list with four elements:
 #' \describe{

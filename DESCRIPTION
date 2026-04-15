@@ -21,12 +21,23 @@ LinkingTo: Rcpp, RcppArmadillo
 Depends: 
     R (>= 3.5)
 LazyData: true
-Suggests: 
+LazyDataCompression: xz
+Suggests:
     knitr,
     rmarkdown,
     MASS,
     Seurat,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    SeuratObject,
+    clusterProfiler,
+    enrichplot,
+    DOSE,
+    WGCNA,
+    dynamicTreeCut,
+    pheatmap,
+    RColorBrewer,
+    gridExtra,
+    parallel
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://changsubiostats.github.io/CS-CORE/

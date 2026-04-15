@@ -2,7 +2,7 @@
 title: "Covariate adjustment"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{covariate_adjustment}
+  %\VignetteIndexEntry{Covariate adjustment}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
