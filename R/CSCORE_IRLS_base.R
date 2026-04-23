@@ -15,10 +15,11 @@
 #' @param X A n by p matrix of UMI counts, where n denotes the number of cells and p denotes the number of genes
 #' @param seq_depth A length n vector of sequencing depths
 #' @param post_process Whether to process the estimated co-expressions such that the estimates are between -1 and 1. Default to TRUE.
+#' @param return_cov Whether to return covariance matrix (instead of correlation). Default to FALSE.
 #'
 #' @return A list of three p by p matrices:
 #' \describe{
-#'   \item{est}{co-expression estimates}
+#'   \item{est}{co-expression estimates if return_cov=FALSE; otherwise covariance estimates}
 #'   \item{p_value}{p values}
 #'   \item{test_stat}{test statistics}
 #' }
@@ -42,7 +43,7 @@
 #' \emph{Nature Communications}.
 #' doi: <https://doi.org/10.1038/s41467-023-40503-7>
 #'
-CSCORE_IRLS_base <- function(X, seq_depth, post_process = TRUE){
+CSCORE_IRLS_base <- function(X, seq_depth, post_process = TRUE, return_cov = FALSE){
   if (is.null(seq_depth)) {
     seq_depth = apply(X, 1, sum, na.rm = T)
   }
@@ -107,8 +108,11 @@ CSCORE_IRLS_base <- function(X, seq_depth, post_process = TRUE){
   neg_gene_inds <- which(sigma2 < 0)
   sigma2[neg_gene_inds] <- 0
   sigma <- sqrt(sigma2)
-  est <- covar/outer(sigma, sigma)
-
+  if(!return_cov){
+    est <- covar/outer(sigma, sigma)
+  }else{
+    est <- covar
+  }
   # Post-process the co-expression estimates
   if(post_process) est <- post_process_est(est)
   return(list(est = est, p_value = p_value, test_stat = test_stat))

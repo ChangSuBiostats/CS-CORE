@@ -10,7 +10,7 @@ Cell-type-specific co-expression inference from single cell RNA-sequencing data.
 doi: \url{https://doi.org/10.1038/s41467-023-40503-7}
 }
 \usage{
-CSCORE_IRLS_base(X, seq_depth, post_process = TRUE)
+CSCORE_IRLS_base(X, seq_depth, post_process = TRUE, return_cov = FALSE)
 }
 \arguments{
 \item{X}{A n by p matrix of UMI counts, where n denotes the number of cells and p denotes the number of genes}
@@ -18,11 +18,13 @@ CSCORE_IRLS_base(X, seq_depth, post_process = TRUE)
 \item{seq_depth}{A length n vector of sequencing depths}
 
 \item{post_process}{Whether to process the estimated co-expressions such that the estimates are between -1 and 1. Default to TRUE.}
+
+\item{return_cov}{Whether to return covariance matrix (instead of correlation). Default to FALSE.}
 }
 \value{
 A list of three p by p matrices:
 \describe{
-\item{est}{co-expression estimates}
+\item{est}{co-expression estimates if return_cov=FALSE; otherwise covariance estimates}
 \item{p_value}{p values}
 \item{test_stat}{test statistics}
 }
