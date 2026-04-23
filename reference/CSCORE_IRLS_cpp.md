@@ -178,7 +178,7 @@ implemented in Rcpp.
 ## run CSCORE on a simulated independent gene pair
 cscore_example <- CSCORE_IRLS_cpp(ind_gene_pair$counts, ind_gene_pair$seq_depths)
 #> [INFO] IRLS converged after 2 iterations.
-#> [INFO] Starting WLS for covariance at Thu Apr 23 19:51:22 2026
+#> [INFO] Starting WLS for covariance at Thu Apr 23 21:04:42 2026
 #> [INFO] 0.0000% co-expression estimates were greater than 1 and were set to 1.
 #> [INFO] 0.0000% co-expression estimates were smaller than -1 and were set to -1.
 #> [INFO] Finished WLS. Elapsed time: 0.0001 seconds.
