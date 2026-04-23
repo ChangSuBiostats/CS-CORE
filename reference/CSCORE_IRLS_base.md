@@ -8,7 +8,7 @@ for two main reasons:
 ## Usage
 
 ``` r
-CSCORE_IRLS_base(X, seq_depth, post_process = TRUE)
+CSCORE_IRLS_base(X, seq_depth, post_process = TRUE, return_cov = FALSE)
 ```
 
 ## Source
@@ -34,13 +34,19 @@ RNA-sequencing data. *Nature Communications*. doi:
   Whether to process the estimated co-expressions such that the
   estimates are between -1 and 1. Default to TRUE.
 
+- return_cov:
+
+  Whether to return covariance matrix (instead of correlation). Default
+  to FALSE.
+
 ## Value
 
 A list of three p by p matrices:
 
 - est:
 
-  co-expression estimates
+  co-expression estimates if return_cov=FALSE; otherwise covariance
+  estimates
 
 - p_value:
 
