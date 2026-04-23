@@ -111,6 +111,7 @@ CSCORE_IRLS_base <- function(X, seq_depth, post_process = TRUE, return_cov = FAL
   if(!return_cov){
     est <- covar/outer(sigma, sigma)
   }else{
+    diag(covar) <- sigma2
     est <- covar
   }
   # Post-process the co-expression estimates
