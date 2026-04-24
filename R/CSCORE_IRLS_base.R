@@ -16,12 +16,18 @@
 #' @param seq_depth A length n vector of sequencing depths
 #' @param post_process Whether to process the estimated co-expressions such that the estimates are between -1 and 1. Default to TRUE.
 #' @param return_cov Whether to return covariance matrix (instead of correlation). Default to FALSE.
-#'
-#' @return A list of three p by p matrices:
+#' @param return_mu_sigma_sq Whether to return mu and sigma_sq estimates. Default to FLASE.
+#' 
+#' @return A list containing:
 #' \describe{
-#'   \item{est}{co-expression estimates if return_cov=FALSE; otherwise covariance estimates}
-#'   \item{p_value}{p values}
-#'   \item{test_stat}{test statistics}
+#'   \item{est}{A p x p matrix of co-expression estimates (if \code{return_cov = FALSE}) 
+#'     or covariance estimates (if \code{return_cov = TRUE}).}
+#'   \item{p_value}{A p x p matrix of p-values.}
+#'   \item{test_stat}{A p x p matrix of test statistics.}
+#'   \item{mu}{A length-p vector of estimated means (expectation of underlying gene expression). 
+#'     Returned only if \code{return_mu_sigma_sq = TRUE}.}
+#'   \item{sigma_sq}{A length-p vector of estimated variances (variance of underlying gene expression). 
+#'     Returned only if \code{return_mu_sigma_sq = TRUE}.}
 #' }
 #' @export
 #'
@@ -43,7 +49,7 @@
 #' \emph{Nature Communications}.
 #' doi: <https://doi.org/10.1038/s41467-023-40503-7>
 #'
-CSCORE_IRLS_base <- function(X, seq_depth, post_process = TRUE, return_cov = FALSE){
+CSCORE_IRLS_base <- function(X, seq_depth, post_process = TRUE, return_cov = FALSE, return_mu_sigma_sq = FALSE){
   if (is.null(seq_depth)) {
     seq_depth = apply(X, 1, sum, na.rm = T)
   }
@@ -116,5 +122,9 @@ CSCORE_IRLS_base <- function(X, seq_depth, post_process = TRUE, return_cov = FAL
   }
   # Post-process the co-expression estimates
   if(post_process) est <- post_process_est(est)
-  return(list(est = est, p_value = p_value, test_stat = test_stat))
+  if(return_mu_sigma_sq){
+    return(list(est = est, p_value = p_value, test_stat = test_stat, mu = mu, sigma_sq = sigma2))
+  }else{
+    return(list(est = est, p_value = p_value, test_stat = test_stat))
+  }
 }

@@ -10,7 +10,13 @@ Cell-type-specific co-expression inference from single cell RNA-sequencing data.
 doi: \url{https://doi.org/10.1038/s41467-023-40503-7}
 }
 \usage{
-CSCORE_IRLS_base(X, seq_depth, post_process = TRUE, return_cov = FALSE)
+CSCORE_IRLS_base(
+  X,
+  seq_depth,
+  post_process = TRUE,
+  return_cov = FALSE,
+  return_mu = FALSE
+)
 }
 \arguments{
 \item{X}{A n by p matrix of UMI counts, where n denotes the number of cells and p denotes the number of genes}
@@ -20,13 +26,20 @@ CSCORE_IRLS_base(X, seq_depth, post_process = TRUE, return_cov = FALSE)
 \item{post_process}{Whether to process the estimated co-expressions such that the estimates are between -1 and 1. Default to TRUE.}
 
 \item{return_cov}{Whether to return covariance matrix (instead of correlation). Default to FALSE.}
+
+\item{return_mu_sigma_sq}{Whether to return mu and sigma_sq estimates. Default to FLASE.}
 }
 \value{
-A list of three p by p matrices:
+A list containing:
 \describe{
-\item{est}{co-expression estimates if return_cov=FALSE; otherwise covariance estimates}
-\item{p_value}{p values}
-\item{test_stat}{test statistics}
+\item{est}{A p x p matrix of co-expression estimates (if \code{return_cov = FALSE})
+or covariance estimates (if \code{return_cov = TRUE}).}
+\item{p_value}{A p x p matrix of p-values.}
+\item{test_stat}{A p x p matrix of test statistics.}
+\item{mu}{A length-p vector of estimated means (expectation of underlying gene expression).
+Returned only if \code{return_mu_sigma_sq = TRUE}.}
+\item{sigma_sq}{A length-p vector of estimated variances (variance of underlying gene expression).
+Returned only if \code{return_mu_sigma_sq = TRUE}.}
 }
 }
 \description{
