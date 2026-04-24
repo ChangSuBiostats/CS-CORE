@@ -8,7 +8,13 @@ for two main reasons:
 ## Usage
 
 ``` r
-CSCORE_IRLS_base(X, seq_depth, post_process = TRUE, return_cov = FALSE)
+CSCORE_IRLS_base(
+  X,
+  seq_depth,
+  post_process = TRUE,
+  return_cov = FALSE,
+  return_mu = FALSE
+)
 ```
 
 ## Source
@@ -39,22 +45,36 @@ RNA-sequencing data. *Nature Communications*. doi:
   Whether to return covariance matrix (instead of correlation). Default
   to FALSE.
 
+- return_mu_sigma_sq:
+
+  Whether to return mu and sigma_sq estimates. Default to FLASE.
+
 ## Value
 
-A list of three p by p matrices:
+A list containing:
 
 - est:
 
-  co-expression estimates if return_cov=FALSE; otherwise covariance
-  estimates
+  A p x p matrix of co-expression estimates (if `return_cov = FALSE`) or
+  covariance estimates (if `return_cov = TRUE`).
 
 - p_value:
 
-  p values
+  A p x p matrix of p-values.
 
 - test_stat:
 
-  test statistics
+  A p x p matrix of test statistics.
+
+- mu:
+
+  A length-p vector of estimated means (expectation of underlying gene
+  expression). Returned only if `return_mu_sigma_sq = TRUE`.
+
+- sigma_sq:
+
+  A length-p vector of estimated variances (variance of underlying gene
+  expression). Returned only if `return_mu_sigma_sq = TRUE`.
 
 ## Details
 

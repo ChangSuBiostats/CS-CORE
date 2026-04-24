@@ -52,7 +52,13 @@ It has since been replaced by <code><a href="CSCORE_IRLS.html">CSCORE_IRLS</a></
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">CSCORE_IRLS_base</span><span class="op">(</span><span class="va">X</span>, <span class="va">seq_depth</span>, post_process <span class="op">=</span> <span class="cn">TRUE</span>, return_cov <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">CSCORE_IRLS_base</span><span class="op">(</span></span>
+<span>  <span class="va">X</span>,</span>
+<span>  <span class="va">seq_depth</span>,</span>
+<span>  post_process <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  return_cov <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  return_mu <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -81,17 +87,30 @@ doi: <a href="https://doi.org/10.1038/s41467-023-40503-7" class="external-link">
 <dt id="arg-return-cov">return_cov<a class="anchor" aria-label="anchor" href="#arg-return-cov"></a></dt>
 <dd><p>Whether to return covariance matrix (instead of correlation). Default to FALSE.</p></dd>
 
+
+<dt id="arg-return-mu-sigma-sq">return_mu_sigma_sq<a class="anchor" aria-label="anchor" href="#arg-return-mu-sigma-sq"></a></dt>
+<dd><p>Whether to return mu and sigma_sq estimates. Default to FLASE.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list of three p by p matrices:</p><dl><dt>est</dt>
-<dd><p>co-expression estimates if return_cov=FALSE; otherwise covariance estimates</p></dd>
+    <p>A list containing:</p><dl><dt>est</dt>
+<dd><p>A p x p matrix of co-expression estimates (if <code>return_cov = FALSE</code>)
+or covariance estimates (if <code>return_cov = TRUE</code>).</p></dd>
 
 <dt>p_value</dt>
-<dd><p>p values</p></dd>
+<dd><p>A p x p matrix of p-values.</p></dd>
 
 <dt>test_stat</dt>
-<dd><p>test statistics</p></dd>
+<dd><p>A p x p matrix of test statistics.</p></dd>
+
+<dt>mu</dt>
+<dd><p>A length-p vector of estimated means (expectation of underlying gene expression).
+Returned only if <code>return_mu_sigma_sq = TRUE</code>.</p></dd>
+
+<dt>sigma_sq</dt>
+<dd><p>A length-p vector of estimated variances (variance of underlying gene expression).
+Returned only if <code>return_mu_sigma_sq = TRUE</code>.</p></dd>
 
 
 </dl></div>
