@@ -76,7 +76,7 @@ CSCORE <- function(object, genes, seq_depth = NULL,
     if(any(!covariate_names %in% colnames(object@meta.data))){
       stop("[ERROR] Not all covariates are included in the Seurat object. Please check `colnames(object@meta.data)`")
     }
-    covariates <- object@meta.data[, covariate_names]
+    covariates <- object@meta.data[, covariate_names, drop = F]
     cat("[INFO] Adjust for covariates:", paste(colnames(covariates), collapse = ", "), "\n")
     covariate_matrix <- stats::model.matrix(~ ., data = covariates)[,-1]
     covariate_matrix <- scale(covariate_matrix, center = T, scale = T)
