@@ -46,11 +46,13 @@ following steps:
 ## 1. Load packages and data
 
 ``` r
+
 library(CSCORE)
 library(Seurat)
 ```
 
 ``` r
+
 # wget https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_peripheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds
 
 pbmc <- readRDS('blish_covid.seu.rds')
@@ -65,6 +67,7 @@ interested in the difference in co-expression between CD14 Monocytes
 from healthy subjects and from COVID-19 patients.
 
 ``` r
+
 # obtain the disease label for each donor (sample)
 Status_id_tab <- table(pbmc_CD14$Donor, pbmc_CD14$Status)
 Status_id_tab
@@ -100,6 +103,7 @@ run 100 permutations, and you can further increase it for p-values with
 higher resolution.
 
 ``` r
+
 diff_result <- diff_CSCORE(pbmc_CD14,
                            group_label  = 'Status',
                            sample_label = 'Donor',
@@ -118,6 +122,7 @@ diff_result <- diff_CSCORE(pbmc_CD14,
   multiple cores via n_cores to speed up the analysis.
 
 ``` r
+
 obs_diff <- diff_result$obs_diff
 permu_pval <- diff_result$p_value
 
@@ -139,6 +144,7 @@ using the soft-thresholding power set to 1, as described in the
 [paper](https://doi.org/10.1038/s41467-023-40503-7).
 
 ``` r
+
 if (!require(WGCNA)) {
   install.packages("WGCNA")
   library(WGCNA)
@@ -148,6 +154,7 @@ if (!require(WGCNA)) {
 ```
 
 ``` r
+
 # Compute the adjacency matrix based on the differential co-expression matrix
 adj <- WGCNA::adjacency.fromSimilarity(abs(obs_diff_thresholded) / 2, power = 1)
 # Compute the topological overlap matrix
@@ -176,6 +183,7 @@ module, using the same approach as in [Getting
 started](https://changsubiostats.github.io/CS-CORE/articles/CSCORE.md).
 
 ``` r
+
 if (!require(clusterProfiler)) {
   BiocManager::install("clusterProfiler")
   library(clusterProfiler)
@@ -185,6 +193,7 @@ if (!require(clusterProfiler)) {
 ```
 
 ``` r
+
 # Set all genes in the clustering analysis as background
 universe <- genes_selected
 
@@ -204,6 +213,7 @@ GO term with BH-adjusted \\p\\-value \\\< 10^{-3}\\ and at least 10
 enriched GO terms) and print the top 3 GO terms per module.
 
 ``` r
+
 top_enrich_clusters_diff <- which(sapply(ego_result, function(x)
   (x@result$p.adjust[1] < 0.001) & (dim(x)[1] > 10)))
 top_enrich_go_diff <- lapply(top_enrich_clusters_diff, function(i) ego_result[[i]]@result[1:3, ])
@@ -213,6 +223,7 @@ top_enrich_go_diff <- lapply(top_enrich_clusters_diff, function(i) ego_result[[i
     #> 
 
 ``` r
+
 for (i in 1:length(top_enrich_go_diff)) {
   print(top_enrich_go_diff[[i]][, c('Description', 'GeneRatio', 'p.adjust')])
   cat('\n')
@@ -266,6 +277,7 @@ visualize the enriched pathways and the difference in co-expression
 between groups.
 
 ``` r
+
 for (pkg in c("enrichplot", "pheatmap", "RColorBrewer", "gridExtra")) {
   if (!require(pkg, character.only = TRUE)) {
     if (pkg == "enrichplot") BiocManager::install(pkg) else install.packages(pkg)
@@ -279,6 +291,7 @@ to illustrate the visualization of GO pathways and of co-expression
 networks in Healthy versus COVID patients.
 
 ``` r
+
 # gene set of interest
 gene_set <- module_list[[4]]
 
@@ -289,6 +302,7 @@ dotplot(ego_result[[4]])
 ![](differential_coexpression_files/figure-html/unnamed-chunk-16-1.png)
 
 ``` r
+
 # organize the co-expression estimates for the gene set of interest
 # the labels are given by group_levels used in diff_CSCORE()
 group_levels <- c('Healthy', 'COVID')
@@ -299,6 +313,7 @@ diff_est_example <- list(
 ```
 
 ``` r
+
 col_palette <- colorRampPalette(rev(brewer.pal(n = 7, name = "RdYlBu")))(100)
 breaks <- seq(-1, 1, length.out = 101)
 p_list <- list()
@@ -327,6 +342,7 @@ biological functions: defense response to virus versus ribosomal protein
 annotation.
 
 ``` r
+
 annot_df <- data.frame(cutree(p_list[[2]]$tree_row, 2))
 colnames(annot_df) <- 'group'
 annot_df$group <- factor(annot_df[[1]],

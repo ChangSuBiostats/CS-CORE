@@ -13,7 +13,7 @@ CSCORE_IRLS_base(
   seq_depth,
   post_process = TRUE,
   return_cov = FALSE,
-  return_mu = FALSE
+  return_mu_sigma_sq = FALSE
 )
 ```
 

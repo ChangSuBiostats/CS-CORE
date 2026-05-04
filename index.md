@@ -18,6 +18,7 @@ single cell RNA-sequencing data.” *Nature Communications* 14.1 (2023):
 `CS-CORE` is available on GitHub. You can install it using
 
 ``` r
+
 ## Load devtools for installing R packages from Github
 library(devtools)
 ## Install CS-CORE from Github

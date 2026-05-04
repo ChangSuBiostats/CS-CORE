@@ -7,6 +7,7 @@ gene modules that are enriched for biological functions in cell types.
 ## 1. Load packages and data
 
 ``` r
+
 library(CSCORE)
 library(Seurat)
 ```
@@ -26,6 +27,7 @@ wget https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_o
 After downloading blish_covid.seu.rds, we load it into the R session
 
 ``` r
+
 pbmc <- readRDS('blish_covid.seu.rds')
 pbmc <- UpdateSeuratObject(pbmc) # update the obsolete Seurat object
 ```
@@ -42,6 +44,7 @@ capturing associations driven by differences between cell types
 co-expression within a homogeneous cell population.
 
 ``` r
+
 pbmc_B = pbmc[,pbmc$cell.type.coarse %in% 'B']
 ```
 
@@ -65,6 +68,7 @@ to study. We recommend choosing the gene sets that are of interest to
 your application.
 
 ``` r
+
 mean_exp = rowMeans(pbmc_B@assays$RNA@counts/pbmc_B$nCount_RNA)
 genes_selected = names(sort.int(mean_exp, decreasing = T))[1:5000]
 ```
@@ -76,6 +80,7 @@ order to study B-cell specific co-expression network among healthy
 control B cells.
 
 ``` r
+
 pbmc_B_healthy <- pbmc_B[, pbmc_B$Status == "Healthy"]
 ```
 
@@ -84,6 +89,7 @@ interest. We note that CSCORE operates on the raw UMI counts,
 i.e. `object[['RNA']]@counts` for the Seurat object `object`.
 
 ``` r
+
 CSCORE_result <- CSCORE(pbmc_B_healthy, genes = genes_selected)
 # faster yet more memory intensive:
 # CSCORE_result <- CSCORE(pbmc_B_healthy, genes = genes_selected, IRLS_version = 'bash_R')
@@ -109,6 +115,7 @@ not statistically significant (Benjamini & Hochberg-adjusted
 \\p\\-values \\\>0.05\\) to 0.
 
 ``` r
+
 # Obtain CS-CORE co-expression estimates
 CSCORE_coexp <- CSCORE_result$est
 
@@ -132,6 +139,7 @@ on single cell data as demonstrated in our
 [manuscript](https://www.biorxiv.org/content/10.1101/2022.12.13.520181v1).
 
 ``` r
+
 if (!require(WGCNA)) {
   install.packages("WGCNA")
   library(WGCNA)
@@ -141,6 +149,7 @@ if (!require(WGCNA)) {
 ```
 
 ``` r
+
 # Compute the adjacency matrix based on the co-expression matrix
 adj = WGCNA::adjacency.fromSimilarity(abs(CSCORE_coexp), power = 1)
 # Compute the topological overlap matrix
@@ -175,6 +184,7 @@ implementation from [Wu et
 al.](https://pubmed.ncbi.nlm.nih.gov/34557778/).
 
 ``` r
+
 if (!require(clusterProfiler)) {
   BiocManager::install("clusterProfiler")
   library(clusterProfiler)
@@ -184,6 +194,7 @@ if (!require(clusterProfiler)) {
 ```
 
 ``` r
+
 # Set all genes in clustering analysis as background,
 # such that the enrichment result of any module is not attributed to its high expression levels.
 universe <- genes_selected
@@ -211,12 +222,14 @@ purposes, we focus on the modules with the strongest enrichment signals
 GO terms.
 
 ``` r
+
 top_enrich_clusters <- which(sapply(ego_result, function(x) 
   (x@result$p.adjust[1] < 0.001) & (dim(x)[1]>10)))
 top_enrich_go <- lapply(top_enrich_clusters, function(i) ego_result[[i]]@result[1:3,])
 ```
 
 ``` r
+
 for(i in 1:length(top_enrich_go)){
   print(top_enrich_go[[i]][, c('Description', 'GeneRatio', 'p.adjust')])
   cat('\n')

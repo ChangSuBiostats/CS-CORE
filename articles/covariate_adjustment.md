@@ -44,11 +44,13 @@ same dataset as in [Getting
 started](https://changsubiostats.github.io/CS-CORE/articles/CSCORE.md).
 
 ``` r
+
 library(CSCORE)
 library(Seurat)
 ```
 
 ``` r
+
 # wget https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_peripheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds
 
 pbmc <- readRDS('blish_covid.seu.rds')
@@ -62,6 +64,7 @@ pbmc_B_healthy <- pbmc_B[, pbmc_B$Status == "Healthy"]
 This dataset comes with detailed cell-level covariates:
 
 ``` r
+
 colnames(pbmc_B_healthy@meta.data)
 #>  [1] "orig.ident"       "nCount_RNA"       "nFeature_RNA"     "percent.mt"       "percent.rps"      "percent.rpl"     
 #>  [7] "percent.rrna"     "nCount_SCT"       "nFeature_SCT"     "SCT_snn_res.1"    "seurat_clusters"  "singler"         
@@ -74,6 +77,7 @@ As an example, we choose to adjust for `Sex` and `percent.mt`. To run
 CS-CORE with covariate adjustment, use
 
 ``` r
+
 CSCORE_result_adj <- CSCORE(pbmc_B_healthy,
                             genes = genes_selected,
                             covariate_names = c('percent.mt', 'Sex'))
@@ -93,6 +97,7 @@ understand the detailed impact of covariate adjustment, we also compare
 with the results without covariate adjustment.
 
 ``` r
+
 CSCORE_result <- CSCORE(pbmc_B_healthy, genes = genes_selected)
 #> [INFO] IRLS converged after 3 iterations.
 #> [INFO] Starting WLS for covariance at Thu Jun 26 17:09:50 2025
@@ -102,6 +107,7 @@ CSCORE_result <- CSCORE(pbmc_B_healthy, genes = genes_selected)
 ```
 
 ``` r
+
 # compare co-expression estimates for a random set of gene pairs
 set.seed(42002)
 p <- length(genes_selected)
@@ -116,6 +122,7 @@ abline(0,1,col='red')
 ![](figure/figrho-1.png)
 
 ``` r
+
 plot(CSCORE_result$test_stat[random_pairs],
      CSCORE_result_adj$test_stat[random_pairs],
      xlab = 'CS-CORE', ylab = 'CS-CORE adjusted',
